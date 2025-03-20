@@ -9,7 +9,7 @@ import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.LoggingTimer;
 import com.liferay.portal.kernel.util.SystemProperties;
-import com.liferay.portal.kernel.util.PropsUtil;
+import com.liferay.portal.util.PropsUtil;
 import com.liferay.portal.verify.VerifyProperties;
 
 import java.io.File;
@@ -17,6 +17,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
@@ -25,7 +26,7 @@ import java.util.Set;
 /**
  * @author Brian Wing Shun Chan
  */
-public class VerifyProperties2025q12 {
+public class VerifyProperties2024q47 {
 
 	public static LinkedList<String> verify() throws Exception {
 		verifySystemProperties();
@@ -33,7 +34,7 @@ public class VerifyProperties2025q12 {
 		/* List<String> keys = */ verifyPortalProperties();
 
 		return _log.popMessages();
-		
+
 //		if (!keys.isEmpty()) {
 //			_log.error(
 //				"Stopping the server due to incorrect use of migrated portal " +
@@ -2065,9 +2066,9 @@ public class VerifyProperties2025q12 {
 		"verify.process.concurrency.threshold", "webdav.storage.class",
 		"webdav.storage.show.edit.url", "webdav.storage.show.view.url",
 		"webdav.storage.tokens", "wiki.email.page.added.signature",
-		"wiki.email.page.updated.signature", "work.dir.override.enabled",
-		"xml.sitemap.index.enabled", "xsl.template.secure.processing.enabled",
-		"xss.allow", "xuggler.enabled", "xuggler.jar.file", "xuggler.jar.url",
+		"wiki.email.page.updated.signature", "xml.sitemap.index.enabled",
+		"xsl.template.secure.processing.enabled", "xss.allow",
+		"xuggler.enabled", "xuggler.jar.file", "xuggler.jar.url",
 		"xuggler.jar.options", "xuggler.ffpreset.8x8dct", "xuggler.ffpreset.bf",
 		"xuggler.f.ffpreset.cmp", "xuggler.f.ffpreset.coder",
 		"xuggler.f.ffpreset.flags", "xuggler.f.ffpreset.flags2",
