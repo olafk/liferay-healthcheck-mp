@@ -30,3 +30,4 @@
 test-results
 /modules/healthcheck/CE-*
 /modules/healthcheck/DXP-*
+configs/local/osgi/configs/*Frontend*

@@ -139,7 +139,7 @@ public class ClientExtensionHostHealthcheck implements Healthcheck {
 					if (url.startsWith("/document")) {
 						result.add(
 							new HealthcheckItem(
-								true, parameterizedLink, _MSG_LOCAL_DOCLIB,
+								false, parameterizedLink, _MSG_LOCAL_DOCLIB,
 								clientExtensionEntry.getName(locale), url));
 					}
 					else {
