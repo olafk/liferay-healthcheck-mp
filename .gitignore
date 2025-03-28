@@ -28,6 +28,8 @@
 /plugins-sdk/dist
 /plugins-sdk/lib
 test-results
+/language/Language_*.properties
 /modules/healthcheck/CE-*
 /modules/healthcheck/DXP-*
+/modules/admin-theme-configurable-bg
 configs/local/osgi/configs/*Frontend*
