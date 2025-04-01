@@ -181,15 +181,5 @@ private String shorten(String url) {
 			<aui:button onClick="<%= showIgnored %>" value="show-ignored-checks" />
 		</div>
 	</aui:button-row>
-<!--
-Ignored <%= numberOfIgnoredHealthchecks %> healthcheck(s):
-
-<%
-for (String theCheck : theIgnoredChecks) {
-	out.write(theCheck);
-	out.write("\n");
-}
-%>
--->
 	</c:if>
 </div>
