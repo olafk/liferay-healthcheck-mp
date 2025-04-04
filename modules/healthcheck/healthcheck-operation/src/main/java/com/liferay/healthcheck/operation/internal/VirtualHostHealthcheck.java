@@ -11,17 +11,13 @@ import com.liferay.healthcheck.HealthcheckItem;
 import com.liferay.healthcheck.HostnameDetector;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.exception.PortalException;
-import com.liferay.portal.kernel.log.Log;
-import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.service.CompanyLocalService;
 
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Set;
 
-import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
 
 /**
@@ -62,29 +58,12 @@ public class VirtualHostHealthcheck implements Healthcheck {
 		return "healthcheck-category-operation";
 	}
 
-	@Activate
-	protected void activate() {
-		if (_log.isDebugEnabled()) {
-			_log.debug("Activating");
-		}
-	}
-
-	@Deactivate
-	protected void deactivate() {
-		if (_log.isDebugEnabled()) {
-			_log.debug("Deactivating");
-		}
-	}
-
 	private static final String _CONFIGURATION_LINK = StringBundler.concat(
 		"/group/control_panel/manage?p_p_id=",
-		ConfigurationAdminPortletKeys.SYSTEM_SETTINGS, "&_",
-		ConfigurationAdminPortletKeys.SYSTEM_SETTINGS, "_factoryPid=",
-		VirtualHostHealthcheck._PID, "&_",
-		ConfigurationAdminPortletKeys.SYSTEM_SETTINGS,
-		"_mvcRenderCommandName=%2Fconfiguration_admin%2Fedit_configuration&_",
-		ConfigurationAdminPortletKeys.SYSTEM_SETTINGS, "_pid=",
-		VirtualHostHealthcheck._PID);
+		ConfigurationAdminPortletKeys.INSTANCE_SETTINGS, "&_",
+		ConfigurationAdminPortletKeys.INSTANCE_SETTINGS, "_mvcRenderCommandName=%2Fconfiguration_admin%2Fview_configuration_screen&_",
+		ConfigurationAdminPortletKeys.INSTANCE_SETTINGS,
+		"_configurationScreenKey=general");
 
 	private static final String _MSG =
 		"the-configured-company-virtual-host-x-has-been-accessed";
@@ -95,9 +74,6 @@ public class VirtualHostHealthcheck implements Healthcheck {
 	private static final String _PID =
 		"com.liferay.healthcheck.operation.internal.configuration." +
 			"HealthcheckOperationalSystemConfiguration";
-
-	private static final Log _log = LogFactoryUtil.getLog(
-		VirtualHostHealthcheck.class);
 
 	@Reference
 	private CompanyLocalService _companyLocalService;
