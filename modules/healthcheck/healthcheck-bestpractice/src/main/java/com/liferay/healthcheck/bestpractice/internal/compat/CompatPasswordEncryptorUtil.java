@@ -14,7 +14,7 @@ public class CompatPasswordEncryptorUtil {
 		}
 
 		String algorithm = encryptedPassword.substring(1, index);
-		if(algorithm.equals("PBKDF2")) {
+		if(algorithm.equals("PBKDF2WITHHMACSHA1")) {
 			return new PBKDF2PasswordEncryptor().getEncryptedPasswordAlgorithmSettings(encryptedPassword);
 		} else if(algorithm.equals("BCRYPT")) {
 			return new BCryptPasswordEncryptor().getEncryptedPasswordAlgorithmSettings(encryptedPassword);
