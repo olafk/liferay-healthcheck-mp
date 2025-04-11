@@ -31,13 +31,13 @@ public class VerifyPropertiesHealthcheck implements Healthcheck {
 			
 			if(version.startsWith("2025.q1")) {
 				messages = VerifyProperties2025q12.verify();
-				result.add(new HealthcheckItem(true, _ADDITIONAL_DOCUMENTATION, null, _MSG_EXACT_VERSION, "2025.q1"));
+				result.add(new HealthcheckItem(true, _ADDITIONAL_DOCUMENTATION, null, _MSG_EXACT_VERSION, "2025.q1", ReleaseInfo.getVersionDisplayName()));
 			} else if (version.startsWith("2024.q4")) {
 				messages = VerifyProperties2024q47.verify();
-				result.add(new HealthcheckItem(true, _ADDITIONAL_DOCUMENTATION, null, _MSG_EXACT_VERSION, "2024.q4"));
+				result.add(new HealthcheckItem(true, _ADDITIONAL_DOCUMENTATION, null, _MSG_EXACT_VERSION, "2024.q4", ReleaseInfo.getVersionDisplayName()));
 			} else /* TODO: Implement more checks for other versions */ {
 				messages = VerifyProperties2025q12.verify();
-				result.add(new HealthcheckItem(false, _ADDITIONAL_DOCUMENTATION, null, _MSG_UNIMPLEMENTED_VERSION, version, "2025.q1"));
+				result.add(new HealthcheckItem(false, _ADDITIONAL_DOCUMENTATION, null, _MSG_UNIMPLEMENTED_VERSION, version, ReleaseInfo.getVersionDisplayName(), "2025.q1"));
 			}
 			
 			if(messages.isEmpty()) {
