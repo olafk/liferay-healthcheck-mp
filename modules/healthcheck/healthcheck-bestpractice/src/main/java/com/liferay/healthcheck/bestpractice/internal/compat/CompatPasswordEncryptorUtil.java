@@ -10,7 +10,7 @@ public class CompatPasswordEncryptorUtil {
 		int index = encryptedPassword.indexOf('}');
 
 		if (index < 0) {
-			return null;
+			return "unknown";
 		}
 
 		String algorithm = encryptedPassword.substring(1, index);
