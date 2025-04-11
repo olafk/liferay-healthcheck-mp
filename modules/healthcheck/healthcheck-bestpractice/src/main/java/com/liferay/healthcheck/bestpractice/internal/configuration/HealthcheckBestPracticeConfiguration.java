@@ -33,5 +33,29 @@ public interface HealthcheckBestPracticeConfiguration {
 		required = false
 	)
 	public long maxUsersTestedForHashingAlgorithm();
-
+	
+	@Meta.AD(
+		deflt = "3",
+		description = "healthcheck-bestpractice-age-in-weeks-before-update-installed-description",
+		name = "healthcheck-bestpractice-age-in-weeks-before-update-installed-name",
+		required = false
+	)
+	public long ageInWeeksBeforeUpdateInstalled();
+		
+	@Meta.AD(
+		deflt = "2",
+		description = "healthcheck-bestpractice-max-patches-to-skip-description",
+		name = "healthcheck-bestpractice-max-patches-to-skip-name",
+		required = false
+	)
+	public long maxPatchesToSkip();
+	
+	
+	@Meta.AD(
+		deflt = "15",
+		description = "healthcheck-bestpractice-weeks-warning-before-premium-support-ends-description",
+		name = "healthcheck-bestpractice-weeks-warning-before-premium-support-ends-name",
+		required = false
+	)
+	public long weeksWarningBeforePremiumSupportEnds();
 }
