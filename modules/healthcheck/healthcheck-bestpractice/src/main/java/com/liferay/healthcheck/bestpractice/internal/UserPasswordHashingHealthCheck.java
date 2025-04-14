@@ -115,7 +115,6 @@ public class UserPasswordHashingHealthCheck implements Healthcheck {
 
 				for (User user : users) {
 					String pwd = user.getPassword();
-					System.out.println(user);
 					if (!(user.isServiceAccountUser() || user.isOnDemandUser()
 							|| user.getEmailAddress().equalsIgnoreCase("analytics.administrator@liferay.com"))) {
 						String algorithm = CompatPasswordEncryptorUtil.getEncryptedPasswordAlgorithmSettings(pwd);
