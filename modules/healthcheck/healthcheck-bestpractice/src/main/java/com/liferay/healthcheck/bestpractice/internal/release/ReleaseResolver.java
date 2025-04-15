@@ -27,17 +27,17 @@ public class ReleaseResolver {
 			} catch (NullPointerException e) {
 				return null; // not yet initialized
 			}
+			
 			ReleaseInformation[] releaseInfos = JSONFactoryUtil.looseDeserialize(json, ReleaseInformation[].class);
 			for (ReleaseInformation releaseInfo : releaseInfos) {
-				result.add(releaseInfo);
+				if(releaseInfo.getProductVersion().length() > 0) {
+					result.add(releaseInfo);
+				}
 			}
 		} catch (Exception e) {
 			log.error(e);
 		}
-//		Collections.sort(result, new ReleaseComparator());
-//		for (ReleaseInformation ri : result) {
-//			System.out.println(ri.getReleaseDate());
-//		}
+
 		return result;
 	}
 

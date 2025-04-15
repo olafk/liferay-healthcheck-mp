@@ -50,7 +50,6 @@ public interface HealthcheckBestPracticeConfiguration {
 	)
 	public long maxPatchesToSkip();
 	
-	
 	@Meta.AD(
 		deflt = "15",
 		description = "healthcheck-bestpractice-weeks-warning-before-premium-support-ends-description",
@@ -58,4 +57,14 @@ public interface HealthcheckBestPracticeConfiguration {
 		required = false
 	)
 	public long weeksWarningBeforePremiumSupportEnds();
+	
+	@Meta.AD(
+		deflt = "false",
+		description = "healthcheck-bestpractice-only-update-to-lts-description",
+		name = "healthcheck-bestpractice-only-update-to-lts-name",
+		required = false
+	)
+	public boolean onlyUpdateToLTS();
+		
+	
 }

@@ -22,11 +22,26 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Modified;
 import org.osgi.service.component.annotations.Reference;
+
+/**
+ * Not proud about this code - it's a bit of a mess, but covers a lot of configurable
+ * preferences, combined with the necessity to dynamically load newer release dates
+ * from the internet... It doesn't help that DXP is handled differently 
+ * (releases vs patches) than CE, and that some of the data found in the release 
+ * descriptions is inconsistent (e.g. "Portal" vs "PORTAL")...
+ * 
+ * More elegance would be welcome.
+ * 
+ * TODO refactor to make the checks more maintainable.
+ */
+
 
 @Component(
 		configurationPid = "com.liferay.healthcheck.bestpractice.internal.configuration.HealthcheckBestPracticeConfiguration",
@@ -40,59 +55,63 @@ public class ReleaseAgeHealthcheck implements Healthcheck {
 		ReleaseInformation currentReleaseInformation = getCurrentReleaseInformation();
 
 		if(currentReleaseInformation == null) {
-			result.add(new HealthcheckItem(false, null, "can't find meta info for the currently running release"));
-		} else {
-			result.add(new HealthcheckItem(true, null, "current releasedate: " + currentReleaseInformation.getReleaseDate() + " " + currentReleaseInformation.productVersion));
+			result.add(new HealthcheckItem(false, (String)null, "cant-find-meta-info-for-the-currently-running-release-x", ReleaseInfo.getVersionDisplayName()));
+			return result;
 		}
 
-		LinkedList<ReleaseInformation> productGroupVersionInformation = getProductGroupVersionInformation(currentReleaseInformation.productGroupVersion);
-		_log.debug("found " + productGroupVersionInformation.size() + " entries for this product group (" + currentReleaseInformation.productGroupVersion + ")");
-		_log.debug("This version's release date: " + currentReleaseInformation.getReleaseDate() + " (" + currentReleaseInformation.productVersion + ")");
-		ReleaseInformation latestVersion = productGroupVersionInformation.iterator().next();
-		_log.debug("Latest version's release date: " + latestVersion.getReleaseDate() + " (" + latestVersion.productVersion + ")");
-
-		int releasesBack = 0;
-		ReleaseInformation immediateNextRelease = null;
-		for (Iterator<ReleaseInformation> iterator = productGroupVersionInformation.iterator(); iterator.hasNext();) {
-			ReleaseInformation releaseInformation = (ReleaseInformation) iterator.next();
-			if(releaseInformation.productVersion.equals(currentReleaseInformation.productVersion)) {
-				break;
-			}
-			immediateNextRelease = releaseInformation;
-			releasesBack++;
-		}
-		
-		ReleaseInformation firstRelease = productGroupVersionInformation.descendingIterator().next();
-		
 		if(ReleaseInfo.isDXP()) {
-			if(releasesBack > 0) { 
+			// DXP
+			LinkedList<ReleaseInformation> patchLevelVersionInformation = getPatchLevelVersionInformation(currentReleaseInformation.getProduct(), currentReleaseInformation.getProductGroupVersion());
+			_log.debug("found " + patchLevelVersionInformation.size() + " entries for this product group (" + currentReleaseInformation.getProductGroupVersion() + ")");
+			_log.debug("This version's release date: " + currentReleaseInformation.getReleaseDate() + " (" + currentReleaseInformation.getProductVersion() + ")");
+			ReleaseInformation latestVersion = patchLevelVersionInformation.iterator().next();
+			_log.debug("Latest version's release date: " + latestVersion.getReleaseDate() + " (" + latestVersion.getProductVersion() + ")");
+
+			int patchesBehind = 0; // patches in DXP, full releases in CE
+			ReleaseInformation immediateNextPatch = null;
+			for (Iterator<ReleaseInformation> iterator = patchLevelVersionInformation.iterator(); iterator.hasNext();) {
+				ReleaseInformation releaseInformation = (ReleaseInformation) iterator.next();
+				if(releaseInformation.getProductVersion().equals(currentReleaseInformation.getProductVersion())) {
+					break;
+				}
+				immediateNextPatch = releaseInformation;
+				patchesBehind++;
+			}
+
+			if(patchesBehind > 0) {
+				// Check for acceptable number of patches behind the latest
 				if(_config.maxPatchesToSkip() >= 0) {
 					result.add(
 							new HealthcheckItem(
-									releasesBack <= _config.maxPatchesToSkip(), 
+									patchesBehind <= _config.maxPatchesToSkip(), 
 									_LINK, 
-									"x-newer-patches-are-avialable-warn-from-x-on-you-are-on-x-latest-is-x", 
-									releasesBack, _config.maxPatchesToSkip(), currentReleaseInformation.productVersion, latestVersion.productVersion));
+									"x-newer-patches-are-available-for-x-warn-from-x-on-you-are-on-x-latest-is-x", 
+									patchesBehind, currentReleaseInformation.getProductGroupVersion(), _config.maxPatchesToSkip(), currentReleaseInformation.getProductVersion(), latestVersion.getProductVersion()));
 				}
-				if(immediateNextRelease != null && _config.ageInWeeksBeforeUpdateInstalled() >= 0) {
-					long weeksSinceNextUpdateAvailable = ChronoUnit.WEEKS.between(immediateNextRelease.getReleaseDate(), LocalDate.now());
-					_log.debug("Immediate next release: " + immediateNextRelease.productVersion + " available since " + immediateNextRelease.getReleaseDate());
-					_log.debug("Latest release: " + latestVersion.productVersion + " available since " + latestVersion.getReleaseDate());
+				
+				// Check for acceptable time behind a newer patch release is available
+				if(immediateNextPatch != null && _config.ageInWeeksBeforeUpdateInstalled() >= 0) {
+					long weeksSinceNextUpdateAvailable = ChronoUnit.WEEKS.between(immediateNextPatch.getReleaseDate(), LocalDate.now());
+					_log.debug("Immediate next release: " + immediateNextPatch.getProductVersion() + " available since " + immediateNextPatch.getReleaseDate());
+					_log.debug("Latest release: " + latestVersion.getProductVersion() + " available since " + latestVersion.getReleaseDate());
 					result.add(
 						new HealthcheckItem(
 							weeksSinceNextUpdateAvailable < _config.ageInWeeksBeforeUpdateInstalled(), 
 							_LINK, "a-newer-patch-release-is-available-for-x-weeks-now-you-will-be-warned-from-x-weeks-on-you-are-on-x-latest-is-x",  
 							weeksSinceNextUpdateAvailable, 
-							_config.ageInWeeksBeforeUpdateInstalled(), currentReleaseInformation.productVersion, latestVersion.productVersion)
+							_config.ageInWeeksBeforeUpdateInstalled(), currentReleaseInformation.getProductVersion(), latestVersion.getProductVersion())
 					);
 				}
 			}
 
+			// Check for acceptable premium support period left
+			// TODO: Allow configuration of purchased Extended Premium Support periods for specific versions
 			if(_config.weeksWarningBeforePremiumSupportEnds() >= 0) {
+				ReleaseInformation firstRelease = patchLevelVersionInformation.descendingIterator().next();
 				int premiumSupportYears = 0;
-				if(firstRelease.productVersion.toUpperCase().indexOf("LTS") > 0) {
+				if(firstRelease.getProductVersion().toUpperCase().indexOf("LTS") > 0) {
 					premiumSupportYears = 3;
-				} else if(firstRelease.productVersion.toUpperCase().indexOf("Q") > 0) {
+				} else if(firstRelease.getProductVersion().toUpperCase().indexOf("Q") > 0) {
 					premiumSupportYears = 1;
 				}
 				LocalDate endOfPremiumSupport = firstRelease.getReleaseDate().plusYears(premiumSupportYears);
@@ -101,27 +120,70 @@ public class ReleaseAgeHealthcheck implements Healthcheck {
 				result.add(new HealthcheckItem(
 						weeksUntilEndOfPremiumSupport > _config.weeksWarningBeforePremiumSupportEnds(), 
 						_LINK, "for-this-release-you-have-x-weeks-of-premium-support-left", weeksUntilEndOfPremiumSupport));
-			}			
-		} else {
-				if(releasesBack == 0) {
-					result.add(new HealthcheckItem(true, _LINK,
-							"you-are-on-the-latest-release-x-released-on-x",
-							latestVersion.productVersion, latestVersion.getReleaseDate()));
-				} else {
-					
-					result.add(new HealthcheckItem(false, _LINK,
-						"a-newer-release-is-available-for-x-weeks-the-latest-release-is-x",
-						releasesBack, latestVersion.productVersion));
+			}
+			
+			// Figure out if there is a newer quarterly release, and if it's LTS if the preferences are
+			// set to LTS-only.
+
+			Set<String> productGroups = new TreeSet<String>();
+			for (ReleaseInformation releaseInformation : releaseInfos) {
+				productGroups.add(releaseInformation.getProductGroupVersion());
+			}
+			LinkedList<ReleaseInformation> firstReleases = new LinkedList<ReleaseInformation>();
+			for (String productGroup : productGroups) {
+				LinkedList<ReleaseInformation> allPatches = getPatchLevelVersionInformation(currentReleaseInformation.getProduct(), productGroup);
+				firstReleases.add(allPatches.descendingIterator().next());
+			}
+			firstReleases.sort(Comparator.comparing(ReleaseInformation::getReleaseDate).reversed());
+			
+			ReleaseInformation newerRelease = null;
+			for (ReleaseInformation firstRelease : firstReleases) {
+				if(currentReleaseInformation.getProductGroupVersion().equals(firstRelease.getProductGroupVersion())) {
+					// we found the current release - no need to go further into the past.
+					break;
 				}
+				if(_config.onlyUpdateToLTS() && firstRelease.getProductVersion().indexOf("LTS") > 0) {
+					newerRelease = firstRelease;
+					break;
+				} else if(!_config.onlyUpdateToLTS()) {
+					newerRelease = firstRelease;
+					break;
+				}
+			}
+			if(newerRelease==null) {
+				result.add(new HealthcheckItem(true, _LINK, "you-are-on-the-latest-quarterly-release-x-according-to-your-lts-preference", currentReleaseInformation.getProductGroupVersion()));
+			} else {
+				long weeksAvailable = ChronoUnit.WEEKS.between(newerRelease.getReleaseDate(), LocalDate.now());
+				result.add(new HealthcheckItem(false, _LINK, "a-newer-quarterly-release-x-is-available-for-x-weeks", newerRelease.getProductGroupVersion(), weeksAvailable));
+			}
+		} else {
+			// Community Edition
+			LinkedList<ReleaseInformation> releaseVersionInformation = getPatchLevelVersionInformation(currentReleaseInformation.getProduct(), currentReleaseInformation.getProductGroupVersion());
+			_log.debug("found " + releaseVersionInformation.size() + " entries for this product group (" + currentReleaseInformation.getProduct() + " " + currentReleaseInformation.getProductGroupVersion() + ")");
+			_log.debug("This version's release date: " + currentReleaseInformation.getReleaseDate() + " (" + currentReleaseInformation.getProductVersion() + ")");
+			ReleaseInformation latestVersion = releaseVersionInformation.iterator().next();
+			_log.debug("Latest version's release date: " + latestVersion.getReleaseDate() + " (" + latestVersion.getProductVersion() + ")");
+
+			int releasesBehind = 0; 
+			for (Iterator<ReleaseInformation> iterator = releaseVersionInformation.iterator(); iterator.hasNext();) {
+				ReleaseInformation releaseInformation = (ReleaseInformation) iterator.next();
+				if(releaseInformation.getProductVersion().equals(currentReleaseInformation.getProductVersion())) {
+					break;
+				}
+				releasesBehind++;
+			}
+			
+			if(releasesBehind == 0) {
+				result.add(new HealthcheckItem(true, _LINK,
+						"you-are-on-the-latest-release-x-released-on-x",
+						latestVersion.getProductVersion(), latestVersion.getReleaseDate()));
+			} else {
+				
+				result.add(new HealthcheckItem(false, _LINK,
+					"a-newer-release-is-available-for-x-weeks-the-latest-release-is-x",
+					releasesBehind, latestVersion.getProductVersion()));
+			}
 		}
-		
-		// TODO: Check for age of current implementation
-		// DXP: Handle Q1 LTS, Q2-4 separately
-		// DXP: Make desired upgrade time to new patch configurable
-		// DXP: Make desired path (LTS-only, all quarterlies) configurable
-		// DXP: Make desired upgrade time to next release configurable
-		// DXP: Make desired warning time before end of premium/limited support configurable
-		// Portal: When new release is available, warn to update
 		
 		return result;
 	}
@@ -156,20 +218,20 @@ public class ReleaseAgeHealthcheck implements Healthcheck {
 		if(ReleaseInfo.isDXP()) {
 			searchString = "DXP " + ReleaseInfo.getVersionDisplayName();
 		} else {
-			searchString = "Portal " + ReleaseInfo.getVersionDisplayName(); // ToDo: Check "Portal " magic string
+			searchString = "PORTAL " + ReleaseInfo.getVersionDisplayName().replace("CE GA", "GA"); // ToDo: Check "Portal " magic string
 		}
 		for (ReleaseInformation releaseInformation : releaseInfos) {
-			if(releaseInformation.productVersion.equals(searchString)) {
+			if(releaseInformation.getProductVersion().equals(searchString)) {
 				return releaseInformation;
 			}
 		}
 		return null;
 	}
 	
-	private LinkedList<ReleaseInformation> getProductGroupVersionInformation(String productGroupVersion) {
+	private LinkedList<ReleaseInformation> getPatchLevelVersionInformation(String product, String productGroupVersion) {
 		LinkedList<ReleaseInformation> result = new LinkedList<ReleaseInformation>();
 		for (ReleaseInformation releaseInformation : releaseInfos) {
-			if(releaseInformation.productGroupVersion.equals(productGroupVersion)) {
+			if(releaseInformation.getProduct().equals(product) && releaseInformation.getProductGroupVersion().equals(productGroupVersion)) {
 				result.add(releaseInformation);
 			}
 		}
