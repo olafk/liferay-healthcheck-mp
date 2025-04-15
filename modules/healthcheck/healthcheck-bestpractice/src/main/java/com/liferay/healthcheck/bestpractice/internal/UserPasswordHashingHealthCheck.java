@@ -18,6 +18,7 @@ import com.liferay.configuration.admin.constants.ConfigurationAdminPortletKeys;
 import com.liferay.healthcheck.Healthcheck;
 import com.liferay.healthcheck.HealthcheckItem;
 import com.liferay.healthcheck.bestpractice.internal.compat.CompatPasswordEncryptorUtil;
+import com.liferay.healthcheck.bestpractice.internal.compat.UserEmailAddressComparator;
 import com.liferay.healthcheck.bestpractice.internal.configuration.HealthcheckBestPracticeConfiguration;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.configuration.module.configuration.ConfigurationProvider;
@@ -27,7 +28,6 @@ import com.liferay.portal.kernel.module.configuration.ConfigurationException;
 import com.liferay.portal.kernel.service.UserLocalService;
 import com.liferay.portal.kernel.util.PropsKeys;
 import com.liferay.portal.kernel.util.PropsUtil;
-import com.liferay.portal.kernel.util.comparator.UserEmailAddressComparator;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
 
 import java.util.Arrays;
