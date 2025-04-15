@@ -38,11 +38,11 @@ function build_it_all {
 
 build_it_all release.dxp.api DXP-2025-Q1 dxp-2025.q1.1-lts
 build_it_all release.dxp.api DXP-2024-Q4 dxp-2024.q4.1
-# build_it_all release.dxp.api DXP-2024-Q3 dxp-2024.q3.1
-# build_it_all release.dxp.api DXP-2024-Q2 dxp-2024.q2.1
+build_it_all release.dxp.api DXP-2024-Q3 dxp-2024.q3.1
+build_it_all release.dxp.api DXP-2024-Q2 dxp-2024.q2.1
 # build_it_all release.dxp.api DXP-2024-Q1 dxp-2024.q1.1
 # build_it_all release.dxp.api DXP-2023-Q4 dxp-2023.q4.1
 build_it_all release.portal.api CE-GA132 portal-7.4-ga132
 build_it_all release.portal.api CE-GA129 portal-7.4-ga129
-# build_it_all release.portal.api CE-GA125 portal-7.4-ga125
-# build_it_all release.portal.api CE-GA120 portal-7.4-ga120
+build_it_all release.portal.api CE-GA125 portal-7.4-ga125
+build_it_all release.portal.api CE-GA120 portal-7.4-ga120
