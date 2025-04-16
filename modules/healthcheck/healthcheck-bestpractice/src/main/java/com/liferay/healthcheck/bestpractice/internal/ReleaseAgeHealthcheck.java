@@ -96,7 +96,7 @@ public class ReleaseAgeHealthcheck implements Healthcheck {
 					_log.debug("Latest release: " + latestVersion.getProductVersion() + " available since " + latestVersion.getReleaseDate());
 					result.add(
 						new HealthcheckItem(
-							weeksSinceNextUpdateAvailable < _config.ageInWeeksBeforeUpdateInstalled(), 
+							weeksSinceNextUpdateAvailable <= _config.ageInWeeksBeforeUpdateInstalled(), 
 							_LINK, "a-newer-patch-release-is-available-for-x-weeks-now-you-will-be-warned-from-x-weeks-on-you-are-on-x-latest-is-x",  
 							weeksSinceNextUpdateAvailable, 
 							_config.ageInWeeksBeforeUpdateInstalled(), currentReleaseInformation.getProductVersion(), latestVersion.getProductVersion())
@@ -106,11 +106,11 @@ public class ReleaseAgeHealthcheck implements Healthcheck {
 
 			// Check for acceptable premium support period left
 			// TODO: Allow configuration of purchased Extended Premium Support periods for specific versions
-			if(_config.weeksWarningBeforePremiumSupportEnds() >= 0) {
+			if(_config.weeksWarningBeforePremiumSupportEnds() > -1000) {
 				ReleaseInformation firstRelease = patchLevelVersionInformation.descendingIterator().next();
 				int premiumSupportYears = 0;
 				if(firstRelease.getProductVersion().toUpperCase().indexOf("LTS") > 0) {
-					premiumSupportYears = 3;
+					premiumSupportYears = 3 + _config.yearsAdditionalPremiumSupport();
 				} else if(firstRelease.getProductVersion().toUpperCase().indexOf("Q") > 0) {
 					premiumSupportYears = 1;
 				}
@@ -119,7 +119,7 @@ public class ReleaseAgeHealthcheck implements Healthcheck {
 	
 				result.add(new HealthcheckItem(
 						weeksUntilEndOfPremiumSupport > _config.weeksWarningBeforePremiumSupportEnds(), 
-						_LINK, "for-this-release-you-have-x-weeks-of-premium-support-left", weeksUntilEndOfPremiumSupport));
+						_LINK, "for-this-release-you-have-x-weeks-of-premium-support-left-including-x-years-extended", weeksUntilEndOfPremiumSupport, _config.yearsAdditionalPremiumSupport()));
 			}
 			
 			// Figure out if there is a newer quarterly release, and if it's LTS if the preferences are

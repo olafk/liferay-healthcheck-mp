@@ -40,7 +40,7 @@ public interface HealthcheckBestPracticeConfiguration {
 		name = "healthcheck-bestpractice-age-in-weeks-before-update-installed-name",
 		required = false
 	)
-	public long ageInWeeksBeforeUpdateInstalled();
+	public int ageInWeeksBeforeUpdateInstalled();
 		
 	@Meta.AD(
 		deflt = "2",
@@ -48,7 +48,7 @@ public interface HealthcheckBestPracticeConfiguration {
 		name = "healthcheck-bestpractice-max-patches-to-skip-name",
 		required = false
 	)
-	public long maxPatchesToSkip();
+	public int maxPatchesToSkip();
 	
 	@Meta.AD(
 		deflt = "15",
@@ -56,7 +56,15 @@ public interface HealthcheckBestPracticeConfiguration {
 		name = "healthcheck-bestpractice-weeks-warning-before-premium-support-ends-name",
 		required = false
 	)
-	public long weeksWarningBeforePremiumSupportEnds();
+	public int weeksWarningBeforePremiumSupportEnds();
+	
+	@Meta.AD(
+			deflt = "0",
+			description = "healthcheck-bestpractice-extended-premium-support-subscribed-description",
+			name = "healthcheck-bestpractice-extended-premium-support-subscribed-name",
+			required = false
+	)
+	public int yearsAdditionalPremiumSupport();
 	
 	@Meta.AD(
 		deflt = "false",
