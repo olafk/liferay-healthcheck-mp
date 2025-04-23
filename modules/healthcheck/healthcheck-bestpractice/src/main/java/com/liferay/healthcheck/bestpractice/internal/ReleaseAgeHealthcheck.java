@@ -15,6 +15,7 @@ import com.liferay.portal.kernel.util.ReleaseInfo;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Collection;
 import java.util.Collections;
@@ -126,7 +127,7 @@ public class ReleaseAgeHealthcheck implements Healthcheck {
 			// set to LTS-only.
 
 			Set<String> productGroups = new TreeSet<String>();
-			for (ReleaseInformation releaseInformation : releaseInfos) {
+			for (ReleaseInformation releaseInformation : getReleaseInfos()) {
 				productGroups.add(releaseInformation.getProductGroupVersion());
 			}
 			LinkedList<ReleaseInformation> firstReleases = new LinkedList<ReleaseInformation>();
@@ -211,9 +212,7 @@ public class ReleaseAgeHealthcheck implements Healthcheck {
 	private HealthcheckBestPracticeConfiguration _config;
 	
 	private ReleaseInformation getCurrentReleaseInformation() throws IOException {
-		if(releaseInfos == null) {
-			releaseInfos = ReleaseResolver.retrieveReleases();
-		}
+		Collection<ReleaseInformation> releaseInfos = getReleaseInfos();
 		String searchString;
 		if(ReleaseInfo.isDXP()) {
 			searchString = "DXP " + ReleaseInfo.getVersionDisplayName();
@@ -227,9 +226,11 @@ public class ReleaseAgeHealthcheck implements Healthcheck {
 		}
 		return null;
 	}
-	
-	private LinkedList<ReleaseInformation> getPatchLevelVersionInformation(String product, String productGroupVersion) {
+
+	private LinkedList<ReleaseInformation> getPatchLevelVersionInformation(String product, String productGroupVersion) throws IOException {
 		LinkedList<ReleaseInformation> result = new LinkedList<ReleaseInformation>();
+		Collection<ReleaseInformation> releaseInfos = getReleaseInfos();
+		
 		for (ReleaseInformation releaseInformation : releaseInfos) {
 			if(releaseInformation.getProduct().equals(product) && releaseInformation.getProductGroupVersion().equals(productGroupVersion)) {
 				result.add(releaseInformation);
@@ -245,8 +246,24 @@ public class ReleaseAgeHealthcheck implements Healthcheck {
 		return result;
 	}
 	
-	private Collection<ReleaseInformation> releaseInfos;
+	private Collection<ReleaseInformation> getReleaseInfos() throws IOException {
+		if(ChronoUnit.HOURS.between(lastFetch, LocalDateTime.now()) > 24 ) {
+			_log.debug("fetching new release-information");
+			_releaseInfos = ReleaseResolver.retrieveReleases();
+			lastFetch = LocalDateTime.now();
+		} else {
+			_log.debug("skipping fetch of new release info as the current information is less than a day old");
+		}
+		return _releaseInfos;
+	}
+	
+	// only access through getReleaseInfo, even locally, so that daily reloading of newer releases can be handled.
+	private Collection<ReleaseInformation> _releaseInfos;
 
+	// will fetch releaseinfos daily, so start with an age older than that - ensuring that releases will be fetched
+	// from internet when first accessed.
+	private static LocalDateTime lastFetch = LocalDateTime.now().minusMonths(1);
+	
 	private static final String _CFG = HealthcheckBestPracticeConfiguration.class.getName();
 	
 	private static final String _LINK = StringBundler.concat("/group/control_panel/manage?p_p_id=",
