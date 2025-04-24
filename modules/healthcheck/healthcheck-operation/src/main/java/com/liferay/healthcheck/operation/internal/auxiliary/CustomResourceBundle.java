@@ -23,9 +23,7 @@ public class CustomResourceBundle extends ResourceBundle {
 
 	@Activate
 	public void activate() {
-		if (_log.isInfoEnabled()) {
-			_log.info("Blade Resource Bundle Deployed!");
-		}
+		_log.debug("Healthcheck Resource Bundle Deployed!");
 	}
 
 	@Override

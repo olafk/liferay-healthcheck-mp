@@ -54,8 +54,8 @@ public abstract class BasePropertiesPlausibleValuesHealthcheck<T>
 
 		List<String> theProperties = _getProperties();
 
-		if (_log.isInfoEnabled()) {
-			_log.info("number of properties found: " + theProperties.size());
+		if (_log.isDebugEnabled()) {
+			_log.debug("number of properties found: " + theProperties.size());
 		}
 
 		for (String property : theProperties) {
@@ -72,18 +72,19 @@ public abstract class BasePropertiesPlausibleValuesHealthcheck<T>
 			else {
 
 				// This is a field defined in PropsValues, but
-				// undefined in any portal*.properties file
+				// undefined in any portal*.properties file - hence a
+				// candidate for https://liferay.atlassian.net/browse/LPD-54190
 
 				if (_log.isInfoEnabled()) {
 					_log.info(
 						StringBundler.concat(
-							"null ", property, " ",
+							"LPD-54190: null ", property, " ",
 							_propertyToFieldNames.get(property)));
 				}
 			}
 
-			if (_log.isInfoEnabled()) {
-				_log.info(
+			if (_log.isTraceEnabled()) {
+				_log.trace(
 					StringUtil.merge(
 						new String[] {_clazz.getName(), property, value}, " "));
 			}

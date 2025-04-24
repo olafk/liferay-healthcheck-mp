@@ -39,8 +39,8 @@ public class HealthcheckResourceBundle extends ResourceBundle {
 
 	@Activate
 	public void activate() {
-		if (_log.isInfoEnabled()) {
-			_log.info("Blade Resource Bundle Deployed!");
+		if (_log.isDebugEnabled()) {
+			_log.debug("Healthcheck Global Resource Bundle Deployed!");
 		}
 	}
 

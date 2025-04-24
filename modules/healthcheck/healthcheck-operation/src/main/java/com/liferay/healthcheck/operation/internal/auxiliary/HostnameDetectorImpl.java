@@ -52,8 +52,8 @@ public class HostnameDetectorImpl implements HostnameDetector {
 	@Activate
 	@Modified
 	protected void activate(Map<String, Object> properties) {
-		if (_log.isInfoEnabled()) {
-			_log.info("Activating");
+		if (_log.isDebugEnabled()) {
+			_log.debug("Activating");
 		}
 
 		int maxFilterExecutions = ConfigurableUtil.createConfigurable(
@@ -86,8 +86,8 @@ public class HostnameDetectorImpl implements HostnameDetector {
 
 	@Deactivate
 	protected void deactivate() {
-		if (_log.isInfoEnabled()) {
-			_log.info("Deactivating");
+		if (_log.isDebugEnabled()) {
+			_log.debug("Deactivating");
 		}
 
 		_stopFilter();
@@ -109,17 +109,12 @@ public class HostnameDetectorImpl implements HostnameDetector {
 
 	private synchronized void _startFilter() {
 		if (_serviceRegistration != null) {
-			if (_log.isInfoEnabled()) {
-				_log.info(
-					"Filter started again, ignoring and keeping it running");
-			}
+			_log.debug("Filter started again, ignoring and keeping it running");
 
 			return;
 		}
 
-		if (_log.isInfoEnabled()) {
-			_log.info("Starting Filter");
-		}
+		_log.debug("Starting Filter");
 
 		Bundle bundle = FrameworkUtil.getBundle(HostnameDetectorImpl.class);
 
@@ -137,16 +132,12 @@ public class HostnameDetectorImpl implements HostnameDetector {
 		_serviceRegistration = bundleContext.registerService(
 			Filter.class, _hostNameExtractingFilter, serviceProperties);
 
-		if (_log.isInfoEnabled()) {
-			_log.info("Filter started");
-		}
+		_log.debug("Filter started");
 	}
 
 	private synchronized void _stopFilter() {
 		if (_serviceRegistration == null) {
-			if (_log.isInfoEnabled()) {
-				_log.info("Filter already stopped");
-			}
+			_log.debug("Filter already stopped");
 
 			return;
 		}
@@ -157,9 +148,7 @@ public class HostnameDetectorImpl implements HostnameDetector {
 		).getBundle();
 
 		if (bundle != null) {
-			if (_log.isInfoEnabled()) {
-				_log.info("Stopping Filter");
-			}
+			_log.debug("Stopping Filter");
 
 			_serviceRegistration.unregister();
 

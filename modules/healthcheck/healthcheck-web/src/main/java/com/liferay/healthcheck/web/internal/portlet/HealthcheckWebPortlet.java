@@ -194,8 +194,8 @@ public class HealthcheckWebPortlet extends MVCPortlet {
 			LocalizedHealthcheckItem currentItem = iterator.next();
 
 			if (ignoredChecks.contains(currentItem.getSourceKey())) {
-				if (_log.isInfoEnabled()) {
-					_log.info("ignored: " + currentItem.getSourceKey());
+				if (_log.isTraceEnabled()) {
+					_log.trace("ignored: " + currentItem.getSourceKey());
 				}
 
 				if (!showIgnored) {
@@ -205,15 +205,15 @@ public class HealthcheckWebPortlet extends MVCPortlet {
 				ignored++;
 			}
 			else if (currentItem.isSuccess()) {
-				if (_log.isInfoEnabled()) {
-					_log.info("resolved: " + currentItem.getSourceKey());
+				if (_log.isTraceEnabled()) {
+					_log.trace("resolved: " + currentItem.getSourceKey());
 				}
 
 				succeeded++;
 			}
 			else {
-				if (_log.isInfoEnabled()) {
-					_log.info("failed:  " + currentItem.getSourceKey());
+				if (_log.isTraceEnabled()) {
+					_log.trace("failed:  " + currentItem.getSourceKey());
 				}
 
 				failed++;

@@ -247,7 +247,7 @@ public class ReleaseAgeHealthcheck implements Healthcheck {
 	}
 	
 	private Collection<ReleaseInformation> getReleaseInfos() throws IOException {
-		if(ChronoUnit.HOURS.between(lastFetch, LocalDateTime.now()) > 24 ) {
+		if(ChronoUnit.HOURS.between(lastFetch, LocalDateTime.now()) > 24 || _releaseInfos==null ) {
 			_log.debug("fetching new release-information");
 			_releaseInfos = ReleaseResolver.retrieveReleases();
 			lastFetch = LocalDateTime.now();
