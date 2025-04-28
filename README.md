@@ -7,14 +7,34 @@ Most attention has been given to implement the backend, and there's a very simpl
 This project currently consists of:
 
 * Breaking Changes implementations
-    * e.g. with a copy from Liferay's portal-impl code (e.g. VerifyProperties, which currently runs only during upgrades)
+    * Checks VerifyProperties (with a copy from Liferay's portal-impl code). Liferay itself runs this code
+    only during upgrades, but it can point out older configurations that have been migrated to OSGi config, 
+    or discontinued
 * Best Practice implementations
     * e.g. "Do not use default user accounts & passwords"
+    * Check if the DEV feature "trust all self-signed certificates" has been activated
+    * Check if your password hashing configuration adheres to current OWASP Best Practices
+    * Check a select number of users for the actual hashing used (they might not have logged in, so that 
+    hashing has not been updated to the current configuration)
+    * Check the remaining Premium Support period for DXP and signal before it comes to an end
+    * (Liferay DXP only) Check available updates and signal when more than x updates or patches are 
+    available for your current release, for more than y weeks. Configurable for duration and LTS preference
+    * (Liferay Portal only) Check for an available update and signal when it's available
+    * Check if the currently used JVM supports all locales that you have configured your Liferay 
+    DXP or Portal instance to serve.  
 * Operational implementations    
     * e.g. checks for available memory and redirection configuration
+    * Checks for problematic portal-ext.properties configurations - e.g. duplicated configurations that
+    cause misconfiguration for boolean or numerical properties
+    * Check for unsupported Elasticsearch setups (sidecar)
+    * Check for Client Extensions and Form-DataProviders embedding code from external hosts (as these might
+    need to be updated between PRD/UAT/DEV environments)
+    * Check for validity duration of DXP Activation Key
     * optionally detecting if a backup has been restored in a different system, based on the used hostnames
-    * The optional checks depend on a filter that intercepts a low default number of first requests after 
+    * Some optional checks depend on a filter that intercepts a low default number of first requests after 
     server-start and is deactivated afterwards (for performance reasons) 
+
+...and maybe more that haven't been referenced in this document...
 
 ## How to build
 
@@ -23,16 +43,19 @@ This is a standard Liferay Workspace. Clone, build and deploy
 This repository is used as the backend for publishing an app on Liferay Marketplace, 
 so you'll be able to have it work without building it in any way.
 
+The code is meant to be compiled and run on Java21, which is why releases are only available for 
+DXP-2024-Q2/Portal-GA120 and later, when this compatibility has been added.
+
 ## Reference
 
 * [LPD-253](https://liferay.atlassian.net/browse/LPD-253)
 
 ## Limitations
 
-* Very basic permission checking (Commerce Health Checks implement this in a better way, for example in CommerceHealthStatusDisplayContext). Health Check UI is only available for Company Administrators.
+* Very basic permission checking. Health Check UI is only available for Instance Administrators.
 * UI is veeeeery barebones right now 
-* Only few native health checks implemented: Please contribute more, in code or just ideas
-* Speaking of instances: Not much thought has been given to scenarios with multiple instances that might have different - instance specific - configuration.
+* Not much thought has been given to scenarios with multiple instances that might have different
+ - instance specific - configuration.
 
 ## Ideas for more health checks
 
