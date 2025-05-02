@@ -8,8 +8,11 @@ import com.liferay.portal.kernel.settings.FallbackKeysSettingsUtil;
 import com.liferay.portal.kernel.settings.SettingsException;
 import com.liferay.portal.kernel.settings.SettingsLocator;
 import com.liferay.portal.kernel.settings.TypedSettings;
+import com.liferay.portal.kernel.util.HtmlUtil;
+import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.vulcan.util.LocalDateTimeUtil;
 
+import java.io.IOException;
 import java.net.URL;
 import java.net.UnknownHostException;
 import java.security.SecureRandom;
@@ -21,6 +24,8 @@ import java.time.temporal.ChronoUnit;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
@@ -54,6 +59,7 @@ public class HttpsCertificateValidatorUtil  {
 	private static final String _MSG = "certificate-for-x-is-valid-for-x-weeks";
 	private static final String _MSG_NOT_HTTPS = "url-x-is-not-https";
 	private static final String _MSG_UNKNOWN_HOST = "cant-resolve-url-x-for-certificate-check";
+	private static final String _MSG_IO = "ioexception-when-connecting-to-x-x";
 	
 	public static void validateCertificate(URL url, long companyId, String hint, Collection<HealthcheckItem> result) throws Exception {
 		try {
@@ -67,6 +73,10 @@ public class HttpsCertificateValidatorUtil  {
 			}
 		} catch (UnknownHostException e) {
 			result.add(new HealthcheckItem(false, hint, _MSG_UNKNOWN_HOST, url.toString()));
+		} catch (IOException e) {
+			result.add(new HealthcheckItem(false, hint, _MSG_IO, url.toString(), HtmlUtil.escape(e.getMessage())));
+		} catch (IllegalStateException e) {
+			result.add(new HealthcheckItem(false, hint, _MSG_IO, url.toString(), HtmlUtil.escape(e.getMessage())));
 		}
 	}
 
@@ -94,6 +104,11 @@ public class HttpsCertificateValidatorUtil  {
 	 * @throws Exception
 	 */
 	private static LocalDateTime extractValidity(URL url) throws Exception {
+		
+		// temp:
+		_cache.clear();
+		
+		
 		// connect to server only every 12 hours
 		int maxValidationAgeHours = 12;
 		ValidityCache cachedResult = _cache.get(url);
@@ -139,26 +154,61 @@ public class HttpsCertificateValidatorUtil  {
         SSLContext.setDefault(ctx);
 
         HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
+        
+    	LinkedList<String> subjectAlternativeNames = new LinkedList<String>();
         conn.setHostnameVerifier(new HostnameVerifier() {
             @Override
             public boolean verify(String arg0, SSLSession arg1) {
+            	_log.warn("hostname verification triggered for " + arg0);
+            	try {
+					Certificate[] peerCertificates = arg1.getPeerCertificates();
+					for (Certificate certificate : peerCertificates) {
+						X509Certificate xc = (X509Certificate) certificate;
+						Collection<List<?>> sans = xc.getSubjectAlternativeNames();
+						if(sans != null) {
+							for(List<?> list: sans) {
+								// list contains 2 elements: Integer (GeneralName, 0-8) 
+								// and host name as either String or byte array.
+								// see https://docs.oracle.com/javase/8/docs/api/java/security/cert/X509Certificate.html
+								Object ohostname = list.get(1);
+								String hostname;
+								if(ohostname instanceof String) {
+									hostname = (String) ohostname;
+								} else {
+									hostname = new String((byte[]) ohostname);
+								}
+								_log.warn("available SAN: " + hostname);
+								subjectAlternativeNames.add(hostname);
+							}
+						}
+					}
+				} catch (Exception e) {
+					_log.error(e);
+				}
                 return true;
             }
         });
-        conn.getResponseCode();
-        Certificate[] certs = conn.getServerCertificates();
-        for (Certificate cert :certs){
-        	X509Certificate x509cert = (X509Certificate) cert;
-        	Date notAfter = x509cert.getNotAfter();
-        	if(notAfter.before(resultDate) ) {
-        		resultDate = notAfter;
-        	}
-        }
-
-        conn.disconnect();
-		LocalDateTime result = LocalDateTimeUtil.toLocalDateTime(resultDate);
-		_log.debug("Certificate chain of " + url + " valid until " + result);
-		return result; 
+       	conn.getResponseCode();
+       	if(subjectAlternativeNames.isEmpty()) {
+	        Certificate[] certs = conn.getServerCertificates();
+	        for (Certificate cert :certs){
+	        	X509Certificate x509cert = (X509Certificate) cert;
+	        	Date notAfter = x509cert.getNotAfter();
+	        	if(notAfter.before(resultDate) ) {
+	        		resultDate = notAfter;
+	        	}
+	        }
+	        conn.disconnect();
+			LocalDateTime result = LocalDateTimeUtil.toLocalDateTime(resultDate);
+			_log.debug("Certificate chain of " + url + " valid until " + result);
+			return result; 
+       	} else {
+	        conn.disconnect();
+	        // TODO: If this was not an exception, the message could be properly translated.
+       		throw new IOException(
+       				"Host name " + url.getHost() + " not found in certificates. Available names: " +
+       				StringUtil.merge(subjectAlternativeNames, ", "));
+       	}
     }
     
     private static class DefaultTrustManager implements X509TrustManager {
