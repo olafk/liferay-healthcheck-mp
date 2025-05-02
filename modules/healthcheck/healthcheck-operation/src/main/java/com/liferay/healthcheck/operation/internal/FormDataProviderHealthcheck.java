@@ -11,6 +11,7 @@ import com.liferay.dynamic.data.mapping.service.DDMDataProviderInstanceLocalServ
 import com.liferay.healthcheck.Healthcheck;
 import com.liferay.healthcheck.HealthcheckItem;
 import com.liferay.healthcheck.operation.internal.auxiliary.DataProviderData;
+import com.liferay.healthcheck.operation.internal.auxiliary.HttpsCertificateValidatorUtil;
 import com.liferay.healthcheck.operation.internal.configuration.HealthcheckOperationalConfiguration;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.configuration.module.configuration.ConfigurationProvider;
@@ -21,6 +22,7 @@ import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.service.CompanyLocalService;
 import com.liferay.portal.kernel.service.GroupLocalService;
 
+import java.net.URI;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
@@ -44,7 +46,7 @@ public class FormDataProviderHealthcheck implements Healthcheck {
 
 	@Override
 	public Collection<HealthcheckItem> check(long companyId)
-		throws PortalException {
+		throws Exception {
 
 		Locale locale = _getDefaultLocale(companyId);
 		LinkedList<HealthcheckItem> result = new LinkedList<>();
@@ -118,6 +120,7 @@ public class FormDataProviderHealthcheck implements Healthcheck {
 							_getDataProviderName(dataProvider, group, locale),
 							host, virtualHostname, url));
 				}
+				HttpsCertificateValidatorUtil.validateCertificate(new URI(host).toURL(), companyId, _getLink(dataProvider, group), result);
 			}
 		}
 

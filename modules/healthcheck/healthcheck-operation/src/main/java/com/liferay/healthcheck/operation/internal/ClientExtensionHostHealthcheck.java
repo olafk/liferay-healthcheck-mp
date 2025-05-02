@@ -9,6 +9,7 @@ import com.liferay.client.extension.model.ClientExtensionEntry;
 import com.liferay.client.extension.service.ClientExtensionEntryLocalService;
 import com.liferay.healthcheck.Healthcheck;
 import com.liferay.healthcheck.HealthcheckItem;
+import com.liferay.healthcheck.operation.internal.auxiliary.HttpsCertificateValidatorUtil;
 import com.liferay.healthcheck.operation.internal.configuration.HealthcheckOperationalConfiguration;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.configuration.module.configuration.ConfigurationProvider;
@@ -18,6 +19,7 @@ import com.liferay.portal.kernel.service.CompanyLocalService;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.UnicodePropertiesBuilder;
 
+import java.net.URI;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
@@ -41,7 +43,7 @@ public class ClientExtensionHostHealthcheck implements Healthcheck {
 
 	@Override
 	public Collection<HealthcheckItem> check(long companyId)
-		throws PortalException {
+		throws Exception {
 
 		Locale locale = _getDefaultLocale(companyId);
 		LinkedList<HealthcheckItem> result = new LinkedList<>();
@@ -134,6 +136,7 @@ public class ClientExtensionHostHealthcheck implements Healthcheck {
 								clientExtensionEntry.getName(locale), host,
 								virtualHostname));
 					}
+					HttpsCertificateValidatorUtil.validateCertificate(new URI(host).toURL(), companyId, parameterizedLink, result);
 				}
 				else {
 					if (url.startsWith("/document")) {

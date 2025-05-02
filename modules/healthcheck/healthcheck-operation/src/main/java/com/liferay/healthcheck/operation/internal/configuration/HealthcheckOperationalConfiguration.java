@@ -37,4 +37,20 @@ public interface HealthcheckOperationalConfiguration {
 		required = false
 	)
 	public String[] dataProviderHostWhitelist();
+	
+	@Meta.AD(
+		description = "healthcheck-operational-minimum-https-validity-weeks-description",
+		name = "healthcheck-operational-minimum-https-validity-weeks-name",
+		deflt = "4",
+		required = false
+	)
+	public long minimumCertValidityWeeks();
+	
+	@Meta.AD(
+		description = "healthcheck-operational-additional-checked-certificate-hosts-description",
+		name = "healthcheck-operational-additional-checked-certificate-hosts-name",
+		required = false
+	)
+	public String[] additionalCheckedCertificateHosts();
+	
 }
