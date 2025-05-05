@@ -44,14 +44,13 @@ public abstract class RelaxedHealthcheckBaseImpl implements Healthcheck {
 		// @Reference is not processed for superclasses of the implementation classes
 		// that we're doing this for.
 		HealthcheckRelaxedConfiguration config = ConfigurationProviderUtil.getCompanyConfiguration(HealthcheckRelaxedConfiguration.class, companyId);
-		if(! config.isRelaxed()) {
-			return false;
-		}
 		String virtualHostname = CompanyLocalServiceUtil.getCompany(
 				companyId
 			).getVirtualHostname();
 		List<String> hostnames = Arrays.asList(config.relaxedInstanceHostnames());
-		return hostnames.contains(virtualHostname);
+		if(hostnames.contains("NONE")) { return false; }
+		else if(hostnames.contains("ALL")) { return true; }
+		else { return hostnames.contains(virtualHostname); }
 	}
 	
 	public abstract Collection<HealthcheckItem> doCheck(long companyId) throws Exception;

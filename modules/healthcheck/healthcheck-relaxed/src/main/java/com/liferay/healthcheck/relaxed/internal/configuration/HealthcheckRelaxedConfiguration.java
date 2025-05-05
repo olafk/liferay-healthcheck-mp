@@ -21,16 +21,8 @@ public interface HealthcheckRelaxedConfiguration {
 	@Meta.AD(
 		description = "healthcheck-relaxed-instance-hostnames-description",
 		name = "healthcheck-relaxed-instance-hostnames-name",
-		deflt = "localhost",
+		deflt = "NONE",
 		required = false
 	)
 	public String[] relaxedInstanceHostnames();
-
-	@Meta.AD(
-		description = "healthcheck-relaxed-active-description",
-		name = "healthcheck-relaxed-active-name",
-		required = false
-	)
-	public boolean isRelaxed();
-
 }
