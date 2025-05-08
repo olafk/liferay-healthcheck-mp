@@ -39,12 +39,28 @@ public interface HealthcheckOperationalConfiguration {
 	public String[] dataProviderHostWhitelist();
 	
 	@Meta.AD(
+		description = "healthcheck-operational-webhook-host-whitelist-description",
+		name = "healthcheck-operational-webhook-host-whitelist-name",
+		required = false
+	)
+	public String[] webhookHostWhitelist();
+		
+	@Meta.AD(
 		description = "healthcheck-operational-minimum-https-validity-weeks-description",
 		name = "healthcheck-operational-minimum-https-validity-weeks-name",
 		deflt = "4",
 		required = false
 	)
 	public long minimumCertValidityWeeks();
+	
+	
+	@Meta.AD(
+		description = "healthcheck-operational-max-cache-age-hours-description",
+		name = "healthcheck-operational-max-cache-age-hours-name",
+		deflt = "4",
+		required = false
+	)
+	public long maxCacheAgeHours();
 	
 	@Meta.AD(
 		description = "healthcheck-operational-additional-checked-certificate-hosts-description",
