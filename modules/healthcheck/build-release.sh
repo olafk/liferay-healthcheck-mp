@@ -23,13 +23,15 @@ function build_it_all {
     printf "\nliferay.workspace.product=$3" >> ../../gradle.properties
     ../../gradlew clean jar
     if [ -f healthcheck-api/build/libs/*.jar ]; then
-        mkdir $2
-        mv */build/libs/*.jar $2/
+        mkdir -p dist/$2
+        mv */build/libs/*.jar dist/$2/
     else
-        echo "Build Problem? Can't find output"
+        echo "**************************************"
+        echo "** Build Problem? Can't find output **"
+        echo "**************************************"
         sleep 3
     fi
-    echo Reverting files after $2
+    echo Reverting files after executing steps for $2
     revert_it_all
     sleep 2
 }
