@@ -183,6 +183,8 @@ public class HealthcheckWebPortlet extends MVCPortlet {
 		Set<String> ignoredChecks = new HashSet<>(
 			Arrays.asList(ignoredChecksArray));
 
+		Set<String> seenIgnoredChecks = new HashSet<>();
+		
 		int failed = 0;
 		int succeeded = 0;
 		int ignored = 0;
@@ -198,6 +200,13 @@ public class HealthcheckWebPortlet extends MVCPortlet {
 					_log.trace("ignored: " + currentItem.getSourceKey());
 				}
 
+				// TODO: Keep track when a certain ignored healthcheck
+				// was last seen, so that they can be automatically unignored.
+				// Might require duration as well as actual number of 
+				// executions (to deal with scheduled healthchecks, e.g. every
+				// 5 minutes, and manual ones, e.g. every week)
+				seenIgnoredChecks.add(currentItem.getSourceKey());
+				
 				if (!showIgnored) {
 					iterator.remove();
 				}
@@ -206,7 +215,7 @@ public class HealthcheckWebPortlet extends MVCPortlet {
 			}
 			else if (currentItem.isSuccess()) {
 				if (_log.isTraceEnabled()) {
-					_log.trace("resolved: " + currentItem.getSourceKey());
+					_log.trace("success: " + currentItem.getSourceKey());
 				}
 
 				succeeded++;
