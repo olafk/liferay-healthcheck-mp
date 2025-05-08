@@ -101,26 +101,26 @@ public class FormDataProviderHealthcheck implements Healthcheck {
 				// Note: There is a separate health check to validate the
 				// company virtualhost, that should make this unignorable.
 
-				String host = _getHost(url);
+				String protocolAndHost = _getProtocolAndHost(url);
 				Group group = _groupLocalService.fetchGroup(
 					dataProvider.getGroupId());
 
-				if (hostWhitelist.contains(host)) {
+				if (hostWhitelist.contains(protocolAndHost)) {
 					result.add(
 						new HealthcheckItem(
 							true, _getLink(dataProvider, group),
 							_MSG_WHITELISTED,
 							_getDataProviderName(dataProvider, group, locale),
-							host, virtualHostname, url));
+							protocolAndHost, virtualHostname, url));
 				}
 				else {
 					result.add(
 						new HealthcheckItem(
 							false, _getLink(dataProvider, group), _MSG,
 							_getDataProviderName(dataProvider, group, locale),
-							host, virtualHostname, url));
+							protocolAndHost, virtualHostname, url));
 				}
-				HttpsCertificateValidatorUtil.validateCertificate(new URI(host).toURL(), companyId, _getLink(dataProvider, group), result);
+				HttpsCertificateValidatorUtil.validateCertificate(new URI(protocolAndHost).toURL(), companyId, _getLink(dataProvider, group), result);
 			}
 		}
 
@@ -150,7 +150,7 @@ public class FormDataProviderHealthcheck implements Healthcheck {
 		).getLocale();
 	}
 
-	private String _getHost(String url) {
+	private String _getProtocolAndHost(String url) {
 		if (url.startsWith("http")) {
 			int endOfHost = url.indexOf('/', 8);
 

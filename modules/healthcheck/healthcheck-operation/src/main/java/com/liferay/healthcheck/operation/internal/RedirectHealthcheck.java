@@ -26,9 +26,7 @@ import java.util.Set;
 import org.osgi.framework.Constants;
 import org.osgi.service.cm.ConfigurationException;
 import org.osgi.service.cm.ManagedServiceFactory;
-import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
 
 /**
@@ -104,20 +102,6 @@ public class RedirectHealthcheck implements Healthcheck, ManagedServiceFactory {
 			_log.debug(
 				StringBundler.concat(
 					"adding redirection config for ", companyId, " as ", pid));
-		}
-	}
-
-	@Activate
-	protected void activate() {
-		if (_log.isDebugEnabled()) {
-			_log.debug("Activating");
-		}
-	}
-
-	@Deactivate
-	protected void deactivate() {
-		if (_log.isDebugEnabled()) {
-			_log.debug("Deactivating");
 		}
 	}
 
