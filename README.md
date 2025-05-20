@@ -25,15 +25,24 @@ This project currently consists of:
 * Operational implementations    
     * e.g. checks for available memory and redirection configuration
     * Checks for problematic portal-ext.properties configurations - e.g. duplicated configurations that
-    cause misconfiguration for boolean or numerical properties
+    cause misconfiguration for boolean or numerical properties (see LPS-157829)
     * Check for unsupported Elasticsearch setups (sidecar)
     * Check for Client Extensions and Form-DataProviders embedding code from external hosts (as these might
     need to be updated between PRD/UAT/DEV environments)
     * Check for validity duration of DXP Activation Key
-    * optionally detecting if a backup has been restored in a different system, based on the used hostnames
+    * optionally detecting if a backup (e.g. from PROD) has been restored in a different system (e.g. to UAT), 
+    based on the used hostnames
     * Some optional checks depend on a filter that intercepts a low default number of first requests after 
-    server-start and is deactivated afterwards (for performance reasons) 
-
+    server-start and is deactivated afterwards (for performance reasons)
+    * Checks for certificate validity of systems that this system is connected to (e.g. Client Extensions, 
+    Data Provider, Web Hook, and a list of explicitly configured additional hosts). Warns a configurable
+    amount of weeks before the certificate expires
+    * Tests if an Elasticsearch-Reindexing is required (simply by comparing the number of users found in
+    the database with that from search index) 
+* Relaxed Settings
+	* Allows to configure specific host names (e.g. localhost) that are tested for relaxed settings,
+	so that you can more comfortably develop new features without being bothered by an extra-secure
+	password policy (and others)
 ...and maybe more that haven't been referenced in this document...
 
 ## How to build
@@ -45,6 +54,13 @@ so you'll be able to have it work without building it in any way.
 
 The code is meant to be compiled and run on Java21, which is why releases are only available for 
 DXP-2024-Q2/Portal-GA120 and later, when this compatibility has been added.
+
+Note: Some DXP/Portal code has been copied over. This duplication allows the same code to compile
+for all supported versions without using a new or deprecated API that might not compile or 
+compile well on some versions.
+
+Each version's VerifyProperties class has been copied over and adapted to store its output in
+the Healthcheck format, rather than in log. Also, this copy doesn't call System.exit().
 
 ## Reference
 
@@ -77,6 +93,8 @@ Collecting a few ideas that could go into UI features:
 * Run healthchecks in background (scheduled) - this enables long running processes to run as well (see remark about locale though) 
 * Filter/Sort results by category/result
 * Activate/Deactivate certain categories (e.g. ignore demo-related healthchecks with released security) or pick individual checks to run and blacklist completely.
+* Build a Dashboard of different Healthcheck results, allowing graphical output
+* Provide an API to reveal (pull or push) results to Liferay Cloud Console or other external entities.
 
 ## Visualize Results on a site, instead of a Control Panel app
 
@@ -124,7 +142,8 @@ This sample fragment will render empty if it can't find any healthcheck or the c
 	[/#if]
 	</div>
 
-CSS suggestion for the fragment:
+ugly CSS suggestion for the fragment: (in this case, ugly is a feature, as it should lead
+to the healthchecks being run/fixed)
 
 	.fragment_6101 .has-content {
 		border-color: var(--danger);
