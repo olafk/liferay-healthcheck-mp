@@ -30,9 +30,9 @@ import java.util.HashMap;
  * time-consuming external connections and to make sure that external servers
  * aren't getting upset with occasional connections.
  * 
- * As we're dealing with weeks validity, no attention has been paid for 
+ * As we're dealing with weeks validity, no attention has been paid to 
  * time zones. It's irrelevant if we warn a few hours too early or too late 
- * on this scale.
+ * on this scale, and when the results are cached for 12h anyway.
  * 
  * TODO: Implement proxy connections to external servers.
  * 
