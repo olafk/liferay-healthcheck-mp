@@ -105,6 +105,12 @@ public class ReleaseInformation {
 	// prevent going out to the internet for well known releases at the time of
 	// writing/publishing this plugin. Only newer releases will be checked online
 	{
+		knownReleases.put("DXP 2025.Q1.12 LTS", "2025-05-12");
+		knownReleases.put("DXP 2025.Q1.11 LTS", "2025-05-05");
+		knownReleases.put("DXP 2025.Q1.10 LTS", "2025-04-28");
+		knownReleases.put("DXP 2025.Q1.9 LTS", "2025-04-24");
+		knownReleases.put("DXP 2025.Q1.8 LTS", "2025-04-16");
+		knownReleases.put("DXP 2024.Q1.16 LTS", "2025-04-14");
 		knownReleases.put("DXP 2025.Q1.7 LTS", "2025-04-08");
 		knownReleases.put("DXP 2025.Q1.6 LTS", "2025-03-31");
 		knownReleases.put("DXP 2025.Q1.5 LTS", "2025-03-24");
