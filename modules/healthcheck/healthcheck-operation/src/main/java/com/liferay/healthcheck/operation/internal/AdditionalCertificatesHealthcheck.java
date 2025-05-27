@@ -16,6 +16,7 @@ import com.liferay.portal.kernel.settings.SettingsLocator;
 import com.liferay.portal.kernel.settings.TypedSettings;
 
 import java.net.URI;
+import java.net.URL;
 import java.util.Collection;
 import java.util.LinkedList;
 
@@ -39,8 +40,14 @@ public class AdditionalCertificatesHealthcheck implements Healthcheck {
 		String[] additionalHosts = settings.getValues("additionalCheckedCertificateHosts");
 
 		for (String host : additionalHosts) {
+			URL url;
+			if(host.startsWith("https://")) {
+				url = new URI(host).toURL();
+			} else {
+				url = new URI("https://" + host).toURL();
+			}
 			HttpsCertificateValidatorUtil.validateCertificate(
-					new URI("https://" + host).toURL(), companyId, _CONFIGURATION_LINK, result);
+					url, companyId, _CONFIGURATION_LINK, result);
 		}
 
 		return result;
