@@ -39,4 +39,12 @@ public interface HealthcheckOperationalSystemConfiguration {
 		required = false
 	)
 	public int remainingActivationWeeks();
+
+	@Meta.AD(
+		description = "healthcheck-expected-cluster-size-description",
+		deflt = "1",
+		name = "healthcheck-expected-cluster-size-name",
+		required = false
+	)
+	public int expectedClusterSize();
 }
