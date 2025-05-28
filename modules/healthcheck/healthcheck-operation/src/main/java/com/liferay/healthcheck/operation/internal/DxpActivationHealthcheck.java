@@ -7,7 +7,6 @@ package com.liferay.healthcheck.operation.internal;
 
 import com.liferay.healthcheck.Healthcheck;
 import com.liferay.healthcheck.HealthcheckItem;
-import com.liferay.healthcheck.operation.internal.configuration.HealthcheckOperationalConfiguration;
 import com.liferay.healthcheck.operation.internal.configuration.HealthcheckOperationalSystemConfiguration;
 import com.liferay.portal.configuration.module.configuration.ConfigurationProvider;
 import com.liferay.portal.kernel.exception.PortalException;
