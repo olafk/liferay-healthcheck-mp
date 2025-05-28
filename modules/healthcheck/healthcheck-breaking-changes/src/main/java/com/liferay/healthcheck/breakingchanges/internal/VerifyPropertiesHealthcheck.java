@@ -11,6 +11,7 @@ import com.liferay.healthcheck.breakingchanges.internal.copied.VerifyProperties2
 import com.liferay.healthcheck.breakingchanges.internal.copied.VerifyProperties2024q313;
 import com.liferay.healthcheck.breakingchanges.internal.copied.VerifyProperties2024q47;
 import com.liferay.healthcheck.breakingchanges.internal.copied.VerifyProperties2025q12;
+import com.liferay.healthcheck.breakingchanges.internal.copied.VerifyProperties2025q20;
 import com.liferay.healthcheck.breakingchanges.internal.copied.VerifyPropertiesGA120;
 import com.liferay.healthcheck.breakingchanges.internal.copied.VerifyPropertiesGA125;
 import com.liferay.healthcheck.breakingchanges.internal.copied.VerifyPropertiesGA129;
@@ -35,7 +36,10 @@ public class VerifyPropertiesHealthcheck implements Healthcheck {
 			List<String> messages = Collections.emptyList();
 			String version = ReleaseInfo.getVersionDisplayName().toLowerCase();
 			
-			if(version.startsWith("2025.q1")) {
+			if(version.startsWith("2025.q2")) {
+				messages = VerifyProperties2025q20.verify();
+				result.add(new HealthcheckItem(true, _ADDITIONAL_DOCUMENTATION, null, _MSG_EXACT_VERSION, "2025.q2", ReleaseInfo.getVersionDisplayName()));
+			} else if(version.startsWith("2025.q1")) {
 				messages = VerifyProperties2025q12.verify();
 				result.add(new HealthcheckItem(true, _ADDITIONAL_DOCUMENTATION, null, _MSG_EXACT_VERSION, "2025.q1", ReleaseInfo.getVersionDisplayName()));
 			} else if (version.startsWith("2024.q4")) {
