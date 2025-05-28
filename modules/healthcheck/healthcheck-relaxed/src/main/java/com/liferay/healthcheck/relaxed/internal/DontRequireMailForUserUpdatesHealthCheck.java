@@ -18,9 +18,7 @@ import com.liferay.healthcheck.Healthcheck;
 import com.liferay.healthcheck.HealthcheckItem;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.service.CompanyLocalService;
-import com.liferay.portal.kernel.util.GetterUtil;
-import com.liferay.portal.kernel.util.PropsKeys;
-import com.liferay.portal.util.PropsUtil;
+import com.liferay.portal.util.PropsValues;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -45,10 +43,7 @@ public class DontRequireMailForUserUpdatesHealthCheck extends RelaxedHealthcheck
 
 	@Override
 	public Collection<HealthcheckItem> doCheck(long companyId) throws PortalException {
-		boolean verifyStrangers = GetterUtil.getBoolean(
-				PropsUtil.get(
-						companyLocalService.getCompany(companyId),
-						PropsKeys.COMPANY_SECURITY_STRANGERS_VERIFY ));
+		boolean verifyStrangers = PropsValues.COMPANY_SECURITY_STRANGERS_VERIFY;
 		return Arrays.asList(new HealthcheckItem(!verifyStrangers, LINK, MSG));
 	}
 

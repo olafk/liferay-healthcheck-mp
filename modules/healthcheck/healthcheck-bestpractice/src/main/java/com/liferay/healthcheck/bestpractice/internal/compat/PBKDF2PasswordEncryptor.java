@@ -9,7 +9,6 @@ import com.liferay.petra.reflect.ReflectionUtil;
 import com.liferay.petra.string.CharPool;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
-import com.liferay.portal.kernel.exception.PwdEncryptorException;
 import com.liferay.portal.kernel.util.Base64;
 import com.liferay.portal.kernel.util.GetterUtil;
 import com.liferay.portal.kernel.util.Validator;
@@ -47,7 +46,7 @@ public class PBKDF2PasswordEncryptor {
 				StringPool.FORWARD_SLASH,
 				pbkdf2EncryptionConfiguration.getRounds());
 		}
-		catch (PwdEncryptorException pwdEncryptorException) {
+		catch (Exception pwdEncryptorException) {
 			return ReflectionUtil.throwException(pwdEncryptorException);
 		}
 	}
@@ -62,7 +61,7 @@ public class PBKDF2PasswordEncryptor {
 	private static class PBKDF2EncryptionConfiguration {
 
 		public void configure(String algorithm, String encryptedPassword)
-			throws PwdEncryptorException {
+			throws Exception {
 
 			if (Validator.isNull(encryptedPassword)) {
 				Matcher matcher = _pattern.matcher(algorithm);
@@ -79,13 +78,14 @@ public class PBKDF2PasswordEncryptor {
 					Base64.decode(encryptedPassword));
 
 				try {
+					@SuppressWarnings("unused")
 					int length = byteBuffer.remaining();
 
 					_keySize = byteBuffer.getInt();
 					_rounds = byteBuffer.getInt();
 				}
 				catch (BufferUnderflowException bufferUnderflowException) {
-					throw new PwdEncryptorException(
+					throw new Exception(
 						"Unable to extract salt from encrypted password",
 						bufferUnderflowException);
 				}
