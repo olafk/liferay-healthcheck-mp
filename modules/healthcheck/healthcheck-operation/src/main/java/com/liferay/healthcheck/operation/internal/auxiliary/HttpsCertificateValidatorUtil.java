@@ -41,6 +41,7 @@ import java.util.HashMap;
 
 public class HttpsCertificateValidatorUtil  {
 	private static final String _MSG = "certificate-for-x-is-valid-for-x-weeks";
+	private static final String _MSG_EXPIRED = "certificate-for-x-is-expired-since-x-x-weeks-ago";
 	private static final String _MSG_NOT_HTTPS = "url-x-is-not-https";
 	private static final String _MSG_UNKNOWN_HOST = "cant-resolve-url-x-for-certificate-check";
 	private static final String _MSG_IO = "ioexception-when-connecting-to-x-x";
@@ -52,8 +53,11 @@ public class HttpsCertificateValidatorUtil  {
 				long minimumValidity = getConfigurationValue(companyId, "minimumCertValidityWeeks");
 				LocalDateTime validity = validator.extractValidity(url);
 				long weeksValid = ChronoUnit.WEEKS.between(LocalDateTime.now(), validity);
-				
-				result.add(new HealthcheckItem((weeksValid > minimumValidity), hint, _MSG, url.toString(), weeksValid));
+				if(weeksValid<0) {
+					result.add(new HealthcheckItem(false, hint, _MSG_EXPIRED, url.toString(), validity, Math.abs(weeksValid)));
+				} else {
+					result.add(new HealthcheckItem((weeksValid > minimumValidity), hint, _MSG, url.toString(), weeksValid));
+				}
 			} else {
 				result.add(new HealthcheckItem(false, hint, _MSG_NOT_HTTPS, url.toString()));
 			}
