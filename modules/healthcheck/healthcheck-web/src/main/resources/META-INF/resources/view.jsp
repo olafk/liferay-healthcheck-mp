@@ -109,7 +109,6 @@ private String shorten(String url) {
 			<td style="overflow-wrap: anywhere;">
 				<%= check.getMessage() %>
 				<c:if test="<%= check.getAdditionalDocumentation().size() > 0 %>">
-				&nbsp;&nbsp;<clay:icon symbol="question-circle"	/>
 				<ul>
 					<%
 					for(String url: check.getAdditionalDocumentation()) {
