@@ -247,12 +247,17 @@ public class ReleaseAgeHealthcheck implements Healthcheck {
 	}
 	
 	private Collection<ReleaseInformation> getReleaseInfos() throws IOException {
-		if(ChronoUnit.HOURS.between(lastFetch, LocalDateTime.now()) > 24 || _releaseInfos==null ) {
+		if(ChronoUnit.HOURS.between(_lastFetch, LocalDateTime.now()) > 24 || _releaseInfos==null ) {
 			_log.debug("fetching new release-information");
-			_releaseInfos = ReleaseResolver.retrieveReleases();
-			lastFetch = LocalDateTime.now();
+			Collection<ReleaseInformation> releaseInfos = ReleaseResolver.retrieveReleases();
+			if(releaseInfos != null) {
+				_releaseInfos = releaseInfos;
+				_lastFetch = LocalDateTime.now();
+			} else {
+				_log.error("Could not load new release information");
+			}
 		} else {
-			_log.debug("skipping fetch of new release info as the current information is less than a day old");
+			_log.trace("skipping fetch of new release info as the current information is less than a day old");
 		}
 		return _releaseInfos;
 	}
@@ -262,7 +267,7 @@ public class ReleaseAgeHealthcheck implements Healthcheck {
 
 	// will fetch releaseinfos daily, so start with an age older than that - ensuring that releases will be fetched
 	// from internet when first accessed.
-	private static LocalDateTime lastFetch = LocalDateTime.now().minusMonths(1);
+	private static LocalDateTime _lastFetch = LocalDateTime.now().minusMonths(1);
 	
 	private static final String _CFG = HealthcheckBestPracticeConfiguration.class.getName();
 	

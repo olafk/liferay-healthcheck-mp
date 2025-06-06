@@ -54,9 +54,9 @@ public class HttpsCertificateValidatorUtil  {
 				LocalDateTime validity = validator.extractValidity(url);
 				long weeksValid = ChronoUnit.WEEKS.between(LocalDateTime.now(), validity);
 				if(weeksValid<0) {
-					result.add(new HealthcheckItem(false, hint, _MSG_EXPIRED, url.toString(), validity, Math.abs(weeksValid)));
+					result.add(new HealthcheckItem(false, hint, _MSG_EXPIRED, url.getHost(), validity, Math.abs(weeksValid)));
 				} else {
-					result.add(new HealthcheckItem((weeksValid > minimumValidity), hint, _MSG, url.toString(), weeksValid));
+					result.add(new HealthcheckItem((weeksValid > minimumValidity), hint, _MSG, url.getHost(), weeksValid));
 				}
 			} else {
 				result.add(new HealthcheckItem(false, hint, _MSG_NOT_HTTPS, url.toString()));
