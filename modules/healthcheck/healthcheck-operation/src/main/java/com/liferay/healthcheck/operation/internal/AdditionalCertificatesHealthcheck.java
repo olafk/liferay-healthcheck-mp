@@ -43,6 +43,8 @@ public class AdditionalCertificatesHealthcheck implements Healthcheck {
 			URL url;
 			if(host.startsWith("https://")) {
 				url = new URI(host).toURL();
+			} else if(host.startsWith("http://")) {
+				url = new URI(host).toURL();
 			} else {
 				url = new URI("https://" + host).toURL();
 			}
