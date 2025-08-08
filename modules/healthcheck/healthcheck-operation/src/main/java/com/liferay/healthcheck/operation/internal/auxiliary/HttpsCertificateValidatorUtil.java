@@ -56,7 +56,7 @@ public class HttpsCertificateValidatorUtil  {
 				if(weeksValid<0) {
 					result.add(new HealthcheckItem(false, hint, _MSG_EXPIRED, url.getHost(), validity, Math.abs(weeksValid)));
 				} else {
-					result.add(new HealthcheckItem((weeksValid > minimumValidity), hint, _MSG, url.getHost(), weeksValid));
+					result.add(new HealthcheckItem((weeksValid > minimumValidity), hint, _MSG, url.getHost(), weeksValid, validity.toString()));
 				}
 			} else {
 				result.add(new HealthcheckItem(false, hint, _MSG_NOT_HTTPS, url.toString()));
