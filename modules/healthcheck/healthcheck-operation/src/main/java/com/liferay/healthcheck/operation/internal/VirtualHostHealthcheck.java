@@ -71,10 +71,6 @@ public class VirtualHostHealthcheck implements Healthcheck {
 	private static final String _MSG_ERROR =
 		"the-configured-company-virtual-host-x-has-not-been-accessed-yet";
 
-	private static final String _PID =
-		"com.liferay.healthcheck.operation.internal.configuration." +
-			"HealthcheckOperationalSystemConfiguration";
-
 	@Reference
 	private CompanyLocalService _companyLocalService;
 
