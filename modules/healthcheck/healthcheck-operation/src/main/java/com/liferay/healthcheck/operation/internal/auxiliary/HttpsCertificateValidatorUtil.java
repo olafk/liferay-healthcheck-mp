@@ -40,7 +40,7 @@ import java.util.HashMap;
  */
 
 public class HttpsCertificateValidatorUtil  {
-	private static final String _MSG = "certificate-for-x-is-valid-for-x-weeks";
+	private static final String _MSG = "certificate-for-x-is-valid-for-x-weeks-until-x";
 	private static final String _MSG_EXPIRED = "certificate-for-x-is-expired-since-x-x-weeks-ago";
 	private static final String _MSG_NOT_HTTPS = "url-x-is-not-https";
 	private static final String _MSG_UNKNOWN_HOST = "cant-resolve-url-x-for-certificate-check";
