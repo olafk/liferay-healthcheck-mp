@@ -33,6 +33,7 @@ import org.osgi.service.component.annotations.ReferencePolicyOption;
 )
 public class EnvironmentCompleteHealthcheck implements Healthcheck {
 
+	private static final String[] ADDITIONAL_DOCUMENTATION = { "https://liferay.atlassian.net/browse/LPD-6259" };
 	private static final String CP_DEFINITIONS_PANEL_APP = "com.liferay.commerce.product.definitions.web.internal.application.list.CPDefinitionsPanelApp";
 	private static final String LINK = null;
 	private static final String MSG = "healthcheck-environment-probably-completely-started";
@@ -42,7 +43,7 @@ public class EnvironmentCompleteHealthcheck implements Healthcheck {
 	public Collection<HealthcheckItem> check(long companyId) {
 		LinkedList<HealthcheckItem> result = new LinkedList<>();
 
-		result.add(new HealthcheckItem(_productsPanelApp > 0, LINK, _productsPanelApp > 0 ? MSG : MSG_ERROR));
+		result.add(new HealthcheckItem(_productsPanelApp > 0, ADDITIONAL_DOCUMENTATION, LINK, _productsPanelApp > 0 ? MSG : MSG_ERROR));
 
 		return result;
 	}
