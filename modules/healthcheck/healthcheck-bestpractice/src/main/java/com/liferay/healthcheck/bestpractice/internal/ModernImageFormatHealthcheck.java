@@ -101,7 +101,8 @@ public class ModernImageFormatHealthcheck implements Healthcheck {
 	private static final String _IM_CONFIG = "com.liferay.adaptive.media.image.internal.configuration.AMImageMagickConfiguration";
 	private static final String _AM_CONFIG = "com.liferay.adaptive.media.image.internal.configuration.AMImageConfiguration";
 	private static final String[] _ADAPTIVE_MEDIA_LINKS = { 
-			"https://learn.liferay.com/w/dxp/content-authoring-and-management/documents-and-media/publishing-and-sharing/using-adaptive-media/adaptive-media-configuration-reference" 
+			"https://learn.liferay.com/w/dxp/content-authoring-and-management/documents-and-media/publishing-and-sharing/using-adaptive-media/adaptive-media-configuration-reference",
+			"https://learn.liferay.com/w/dxp/security-and-administration/administration/using-the-server-administration-panel/configuring-external-services"
 			};
 	private static final byte[] SINGLE_PIXEL_PNG = HexFormat.of().parseHex(
 			"89504e470d0a1a0a0000000d4948445200000001000000010802000000907753de0000000c4944415408d7636060600000000400012734270a0000000049454e44ae426082"
