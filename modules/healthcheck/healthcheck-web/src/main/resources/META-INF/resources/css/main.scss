@@ -1,0 +1,11 @@
+.additional-documentation {
+    padding: 1rem;
+    /* position:absolute; */
+    bottom: 5rem;
+	border-width: 1px;
+	/* background-color: #eeeeee; */
+}
+
+.additional-documentation::before {
+	content: "Additional Documentation";
+}

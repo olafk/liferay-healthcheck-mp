@@ -89,6 +89,8 @@ private String shorten(String url) {
 		<div class="col col-12 col-lg-3 col-md-4 col-sm-12"></div>
 	</div>
 
+	<% int popovercount=0; %>
+
 	<table>
 
 		<%
@@ -109,6 +111,12 @@ private String shorten(String url) {
 			<td style="overflow-wrap: anywhere;">
 				<%= check.getMessage() %>
 				<c:if test="<%= check.getAdditionalDocumentation().size() > 0 %>">
+				<button popovertarget="additional-documentation-<%=popovercount%>" class="btn btn-borderless">
+				<clay:icon
+					symbol="info-circle-open"
+				/>
+				</button>
+				<div popover id="additional-documentation-<%=popovercount++ %>" class="additional-documentation">
 				<ul>
 					<%
 					for(String url: check.getAdditionalDocumentation()) {
@@ -118,18 +126,16 @@ private String shorten(String url) {
 						</li>
 					<% } %>
 				</ul>
+				</div>
+				<% popovercount = popovercount + 1; %>
 				</c:if>
 			</td>
-			<td style="padding: 2px; word-wrap: normal;">
-
-				<%
-				if (check.getLink() != null) {
-					out.write("(<a href=\"" + check.getLink() + "\" target=\"_blank\">hint</a>)");
-				}
-				else {
-					out.write("(no&nbsp;hint)");
-				}
-				%>
+			<td style="padding: 0.5rem; word-wrap: normal;">
+				<c:if test="<%= check.getLink() != null %>">
+					<a href="<%= check.getLink() %>">
+						<clay:icon symbol="cog" label="hint" />
+					</a>
+				</c:if>
 
 			</td>
 			<td style="padding: 2px;"><aui:button-row>
