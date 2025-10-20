@@ -14,6 +14,7 @@ function revert_it_all {
     mv healthcheck-api/bnd.bnd.bak healthcheck-api/bnd.bnd
     mv healthcheck-bestpractice/bnd.bnd.bak healthcheck-bestpractice/bnd.bnd
     mv healthcheck-breaking-changes/bnd.bnd.bak healthcheck-breaking-changes/bnd.bnd
+    mv healthcheck-jakarta-breaking-changes/bnd.bnd.bak healthcheck-jakarta-breaking-changes/bnd.bnd
     mv healthcheck-operation/bnd.bnd.bak healthcheck-operation/bnd.bnd
     mv healthcheck-relaxed/bnd.bnd.bak healthcheck-relaxed/bnd.bnd
     mv healthcheck-web/bnd.bnd.bak healthcheck-web/bnd.bnd
