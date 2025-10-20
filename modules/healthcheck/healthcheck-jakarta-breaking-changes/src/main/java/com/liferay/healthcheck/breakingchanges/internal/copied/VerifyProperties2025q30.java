@@ -9,8 +9,7 @@ import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.LoggingTimer;
 import com.liferay.portal.kernel.util.SystemProperties;
-import com.liferay.portal.util.PropsUtil;
-
+import com.liferay.portal.kernel.util.PropsUtil;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
