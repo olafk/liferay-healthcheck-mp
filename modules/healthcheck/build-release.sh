@@ -2,10 +2,12 @@
 
 function revert_it_all {
     echo reverting changes
+    mv $HIDE_DIR/* .
     cp ../../gradle.properties.bak ../../gradle.properties
     mv healthcheck-api/build.gradle.bak healthcheck-api/build.gradle
     mv healthcheck-bestpractice/build.gradle.bak healthcheck-bestpractice/build.gradle
     mv healthcheck-breaking-changes/build.gradle.bak healthcheck-breaking-changes/build.gradle
+    mv healthcheck-jakarta-breaking-changes/build.gradle.bak healthcheck-jakarta-breaking-changes/build.gradle
     mv healthcheck-operation/build.gradle.bak healthcheck-operation/build.gradle
     mv healthcheck-relaxed/build.gradle.bak healthcheck-relaxed/build.gradle
     mv healthcheck-web/build.gradle.bak healthcheck-web/build.gradle
@@ -23,7 +25,20 @@ function build_it_all {
     sed -i.bak "s/DXP/$2/" */bnd.bnd
     sed -i.bak "s/liferay.workspace.product/\#liferay.workspace.product/" ../../gradle.properties
     printf "\nliferay.workspace.product=$3" >> ../../gradle.properties
+
+    if [ "$4" == "jakartaee" ]; then
+      echo "Building for Jakarta-EE"
+      mv healthcheck-breaking-changes $HIDE_DIR/
+      cd ../../
+      ./gradlew upgradeJakarta
+      cd -
+    else
+      echo "Building for Java-EE"
+      mv healthcheck-jakarta-breaking-changes $HIDE_DIR/
+    fi
+    
     ../../gradlew clean jar
+    
     if [ -f healthcheck-api/build/libs/*.jar ]; then
         mkdir -p dist/$2
         mv */build/libs/*.jar dist/$2/
@@ -39,14 +54,32 @@ function build_it_all {
     sleep 2
 }
 
+HIDE_DIR=`mktemp -d`
 
+build_it_all release.dxp.api DXP-2025-Q2 dxp-2025.q2.0     javaee
+build_it_all release.dxp.api DXP-2025-Q1 dxp-2025.q1.0-lts javaee
+build_it_all release.dxp.api DXP-2024-Q4 dxp-2024.q4.0     javaee
+build_it_all release.dxp.api DXP-2024-Q3 dxp-2024.q3.0     javaee
+build_it_all release.dxp.api DXP-2024-Q2 dxp-2024.q2.0     javaee
+build_it_all release.portal.api CE-GA132 portal-7.4-ga132  javaee
+build_it_all release.portal.api CE-GA129 portal-7.4-ga129  javaee
+build_it_all release.portal.api CE-GA125 portal-7.4-ga125  javaee
+build_it_all release.portal.api CE-GA120 portal-7.4-ga120  javaee
 
-build_it_all release.dxp.api DXP-2025-Q2 dxp-2024.q2.0
-build_it_all release.dxp.api DXP-2025-Q1 dxp-2025.q1.0-lts
-build_it_all release.dxp.api DXP-2024-Q4 dxp-2024.q4.0
-build_it_all release.dxp.api DXP-2024-Q3 dxp-2024.q3.0
-build_it_all release.dxp.api DXP-2024-Q2 dxp-2024.q2.0
-build_it_all release.portal.api CE-GA132 portal-7.4-ga132
-build_it_all release.portal.api CE-GA129 portal-7.4-ga129
-build_it_all release.portal.api CE-GA125 portal-7.4-ga125
-build_it_all release.portal.api CE-GA120 portal-7.4-ga120
+echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+echo "!! Jakarta-Builds are deactivated. Building for Jakarta !!"
+echo "!! will upgrade your workspace. Before building, make   !!"
+echo "!! sure you have committed everything to git, so that   !!"
+echo "!! you can revert the operation after you have built    !!"
+echo "!! the jakarta-compatible code. Then uncomment the      !!"
+echo "!! following line                                       !!"
+echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+
+# build_it_all release.dxp.api DXP-2025-Q3 dxp-2025.q3.0     jakartaee
+
+rmdir $HIDE_DIR
+
+echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+echo "!! Remember to git-reset the jakarta changes in  !!"
+echo "!! sourcecode (until it's handled automagically) !!"
+echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"

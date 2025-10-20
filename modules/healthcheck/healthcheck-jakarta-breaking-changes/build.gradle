@@ -1,0 +1,5 @@
+dependencies {
+	compileOnly project(":modules:healthcheck:healthcheck-api")
+	compileOnly group: "com.liferay.portal", name: "com.liferay.portal.impl"
+	compileOnly group: "com.liferay.portal", name: "release.dxp.api"
+}
