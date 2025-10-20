@@ -1,5 +1,5 @@
 /**
- * SPDX-FileCopyrightText: (c) 2000 Liferay, Inc. https://liferay.com
+ * SPDX-FileCopyrightText: (c) 2025 Liferay, Inc. https://liferay.com
  * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
  */
 
@@ -8,13 +8,17 @@ package com.liferay.healthcheck.breakingchanges.internal.copied;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.LoggingTimer;
-import com.liferay.portal.kernel.util.SystemProperties;
 import com.liferay.portal.kernel.util.PropsUtil;
+import com.liferay.portal.kernel.util.SystemProperties;
+import com.liferay.portal.verify.PreupgradeVerifyProcess;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
@@ -23,22 +27,7 @@ import java.util.Set;
 /**
  * @author Brian Wing Shun Chan
  */
-public class VerifyProperties2025q30 {
-
-	public static LinkedList<String> verify() throws Exception {
-		verifySystemProperties();
-
-		/* List<String> keys = */ verifyPortalProperties();
-		return _log.popMessages();
-
-//		if (!keys.isEmpty()) {
-//			_log.error(
-//				"Stopping the server due to incorrect use of migrated portal " +
-//					"properties " + keys);
-//
-//			System.exit(1);
-//		}
-	}
+public class VerifyProperties2025q35 extends PreupgradeVerifyProcess {
 
 	protected static InputStream getPropertiesResourceAsStream(
 			String resourceName)
@@ -50,7 +39,8 @@ public class VerifyProperties2025q30 {
 			return new FileInputStream(propertyFile);
 		}
 
-		ClassLoader classLoader = VerifyProperties2025q30.class.getClassLoader();
+		ClassLoader classLoader =
+			VerifyProperties2025q35.class.getClassLoader();
 
 		try {
 			return classLoader.getResourceAsStream(resourceName);
@@ -266,6 +256,29 @@ public class VerifyProperties2025q30 {
 					propertyNames, oldKey, newKey, moduleName);
 			}
 		}
+	}
+
+	@Override
+	public void doVerify() throws Exception {
+		lastMessages.clear();
+		verifySystemProperties();
+
+		/* List<String> keys = */ verifyPortalProperties();
+		lastMessages = _log.popMessages();
+
+//		verifySystemProperties();
+//
+//		List<String> keys = verifyPortalProperties();
+//
+//		if (!keys.isEmpty()) {
+//			throw new VerifyException(
+//				"Incorrect use of migrated portal properties keys: " + keys);
+//		}
+	}
+
+	@Override
+	protected boolean isSkipDBPartitions() {
+		return true;
 	}
 
 	private static final String[][] _MIGRATED_PORTAL_KEYS = {
@@ -1843,7 +1856,7 @@ public class VerifyProperties2025q30 {
 		"intraband.welder.socket.tcp.no.delay",
 		"invitation.email.max.recipients", "invitation.email.message.body",
 		"invitation.email.message.subject", "invoker.filter.chain.cache.size",
-		"javadoc.manager.enabled", "javax.persistence.validation.mode",
+		"javadoc.manager.enabled", "jakarta.persistence.validation.mode",
 		"jbi.workflow.url", "jcr.initialize.on.startup",
 		"jcr.jackrabbit.config.file.path",
 		"jcr.jackrabbit.credentials.password",
@@ -2284,7 +2297,12 @@ public class VerifyProperties2025q30 {
 				"limit"
 		}
 	};
-
+	
 	private static final DummyLog _log = new DummyLog();
 
+	private LinkedList<String> lastMessages = new LinkedList<String>();
+
+	public Collection<String> getLastMessages() {
+		return Collections.unmodifiableCollection(lastMessages);
+	}
 }

@@ -7,14 +7,13 @@ package com.liferay.healthcheck.breakingchanges.internal;
 
 import com.liferay.healthcheck.Healthcheck;
 import com.liferay.healthcheck.HealthcheckItem;
-import com.liferay.healthcheck.breakingchanges.internal.copied.VerifyProperties2025q30;
+import com.liferay.healthcheck.breakingchanges.internal.copied.VerifyProperties2025q35;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.util.ReleaseInfo;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
-import java.util.List;
 
 import org.osgi.service.component.annotations.Component;
 
@@ -25,14 +24,18 @@ public class VerifyPropertiesHealthcheck implements Healthcheck {
 	public Collection<HealthcheckItem> check(long companyId) throws PortalException {
 		LinkedList<HealthcheckItem> result = new LinkedList<HealthcheckItem>();
 		try {
-			List<String> messages = Collections.emptyList();
+			Collection<String> messages = Collections.emptyList();
 			String version = ReleaseInfo.getVersionDisplayName().toLowerCase();
 			
 			if(version.startsWith("2025.q3")) {
-				messages = VerifyProperties2025q30.verify();
+				VerifyProperties2025q35 verifyProperties2025q30 = new VerifyProperties2025q35();
+				verifyProperties2025q30.doVerify();
+				messages = verifyProperties2025q30.getLastMessages();
 				result.add(new HealthcheckItem(true, _ADDITIONAL_DOCUMENTATION, null, _MSG_EXACT_VERSION, "2025.q3", ReleaseInfo.getVersionDisplayName()));
 			} else /* TODO: Implement more checks for other versions */ {
-				messages = VerifyProperties2025q30.verify();
+				VerifyProperties2025q35 verifyProperties2025q30 = new VerifyProperties2025q35();
+				verifyProperties2025q30.doVerify();
+				messages = verifyProperties2025q30.getLastMessages();
 				result.add(new HealthcheckItem(false, _ADDITIONAL_DOCUMENTATION, null, _MSG_UNIMPLEMENTED_VERSION, version,  "2025.q3"));
 			}
 			 			
