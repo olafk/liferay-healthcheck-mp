@@ -1,6 +1,6 @@
 Bundle-Name: Liferay Healthcheck Web DXP
 Bundle-SymbolicName: com.liferay.healthcheck.web
-Bundle-Version: 1.0.6
+Bundle-Version: 1.0.7-SNAPSHOT
 Provide-Capability:\
 	liferay.language.resources;\
 		resource.bundle.base.name="content.Language"
