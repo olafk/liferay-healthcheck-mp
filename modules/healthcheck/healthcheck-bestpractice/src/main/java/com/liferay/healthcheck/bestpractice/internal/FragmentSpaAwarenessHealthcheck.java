@@ -184,7 +184,7 @@ public class FragmentSpaAwarenessHealthcheck implements Healthcheck {
 
 	private static final String MSG = "fragment-x-in-fragment-set-x-in-group-x-has-x-addEventListener-and-x-removeEventListener";
 	private static final String[] ADDITIONAL_DOCUMENTATION = {
-				"https://liferay.dev/blogs/-/blogs/please-don-t-litter-eventlisteners",
+				"https://liferay.dev/b/please-don-t-litter-eventlisteners",
 				"https://liferay.atlassian.net/browse/LPD-65556"};
 	
 	private static final Log _log = LogFactoryUtil.getLog(FragmentSpaAwarenessHealthcheck.class);
