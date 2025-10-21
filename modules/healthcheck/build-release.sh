@@ -3,7 +3,7 @@
 function revert_it_all {
     echo reverting changes
     mv $HIDE_DIR/* .
-    cp ../../gradle.properties.bak ../../gradle.properties
+    mv ../../gradle.properties.bak ../../gradle.properties
     mv healthcheck-api/build.gradle.bak healthcheck-api/build.gradle
     mv healthcheck-bestpractice/build.gradle.bak healthcheck-bestpractice/build.gradle
     mv healthcheck-breaking-changes/build.gradle.bak healthcheck-breaking-changes/build.gradle
@@ -52,6 +52,8 @@ function build_it_all {
     fi
     echo Reverting files after executing steps for $2
     revert_it_all
+    echo
+    echo
     sleep 2
 }
 
