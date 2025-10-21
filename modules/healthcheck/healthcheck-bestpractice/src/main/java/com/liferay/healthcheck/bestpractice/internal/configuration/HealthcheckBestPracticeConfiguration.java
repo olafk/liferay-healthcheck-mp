@@ -75,7 +75,7 @@ public interface HealthcheckBestPracticeConfiguration {
 	public boolean onlyUpdateToLTS();
 		
 	@Meta.AD(
-		deflt = "b50ad7a5d52f8bbde47aced8a84632d1 (video-url),9a302d020646f2cb4687453b8850928 (dropdown)",
+		deflt = "b50ad7a5d52f8bbde47aced8a84632d1 (video-url) (LPD-65984),9a302d020646f2cb4687453b8850928 (dropdown)",
 		description = "healthcheck-bestpractice-fragment-js-whitelist-description",
 		name = "healthcheck-bestpractice-fragment-js-whitelist-name",
 		required = false

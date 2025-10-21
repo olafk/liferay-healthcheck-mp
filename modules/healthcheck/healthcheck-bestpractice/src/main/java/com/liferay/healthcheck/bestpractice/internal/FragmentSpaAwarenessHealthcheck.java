@@ -120,7 +120,24 @@ public class FragmentSpaAwarenessHealthcheck implements Healthcheck {
 	private boolean isWhitelisted(long companyId, String checksum) throws ConfigurationException {
 		HealthcheckBestPracticeConfiguration companyConfiguration = _configurationProvider
 				.getCompanyConfiguration(HealthcheckBestPracticeConfiguration.class, companyId);
-		return ArrayUtil.contains(companyConfiguration.fragmentJsWhitelist(), checksum);
+		String[] whitelist = companyConfiguration.fragmentJsWhitelist();
+		if(ArrayUtil.contains(whitelist, checksum)) {
+			return true;
+		};
+		// Check for pure checksum with no fragment name, as the fragment name might
+		// be translated and the checksum match would be enough to determine a 
+		// whitelist match
+		String shortenedChecksum = checksum.substring(0, checksum.indexOf(" ") - 1);
+		for (String candidate : whitelist) {
+			int shortenPos = candidate.indexOf(" ");
+			if(shortenPos < 1) {
+				continue;
+			}
+			if(candidate.substring(0, shortenPos - 1).equals(shortenedChecksum)) {
+				return true;
+			}
+		}
+		return false;
 	}
 	
 	private String computeChecksum(FragmentEntry fragmentEntry) {
