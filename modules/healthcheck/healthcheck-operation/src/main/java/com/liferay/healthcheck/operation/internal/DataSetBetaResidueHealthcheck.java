@@ -61,8 +61,18 @@ public class DataSetBetaResidueHealthcheck implements Healthcheck {
 			} catch (NumberFormatException e) {
 			}
 		} else {
-			// TODO: Determine Release Year for CE
-			result.add(new HealthcheckItem(false, LINK, "DataSet Beta Data Detection not yet implemented for Liferay Portal CE. If you had activated the DataSet beta-feature-flag and then upgraded to a version where Datasets are released, you need to clean up beta-data from your database. See the linked KB article."));
+			String versionDisplay = ReleaseInfo.getVersionDisplayName().toUpperCase();
+			String[] releases2024 = {"GA120", "GA125", "GA129"};
+			for (String release : releases2024) {
+				if(versionDisplay.indexOf(release)>-1) {
+					releaseYear = 2024;
+					break;
+				}
+			}
+			if(releaseYear == 2025 && versionDisplay.indexOf("GA132")==-1) {
+				// TODO: Determine Release Year for unknown CE GA
+				result.add(new HealthcheckItem(false, LINK, "DataSet Beta Data Detection: Can not determine release date for this CE release"));			
+			}
 		}
 		
 		if(relationshipBeta == null && relationshipReleased == null) {
